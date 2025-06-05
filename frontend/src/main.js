@@ -6,6 +6,8 @@ import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import 'animate.css'
+import './assets/css/animations.css'
+import './assets/animations.css'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import './assets/styles/main.scss'
@@ -14,9 +16,10 @@ const app = createApp(App)
 
 // Initialize AOS (Animate On Scroll)
 AOS.init({
-  duration: 1000,
-  easing: 'ease-in-out',
+  duration: 800,
+  easing: 'ease-out',
   once: true,
+  offset: 100,
   mirror: false
 })
 

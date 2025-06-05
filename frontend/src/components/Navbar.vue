@@ -18,12 +18,41 @@
           </router-link>
           
           <div v-if="isAuthenticated" class="navbar-dropdown">
-            <button class="navbar-link dropdown-toggle">
-              <i class="fas fa-user"></i>
-              {{ user.username }}
+            <button class="navbar-link dropdown-toggle user-menu-toggle">
+              <AvatarPlaceholder
+                :src="userAvatar"
+                :name="user?.username || 'User'"
+                :alt="user?.username || 'User Avatar'"
+                size="small"
+                variant="circle"
+                :show-status="true"
+                status="online"
+                class="user-avatar"
+              />
+              <span class="username">{{ user?.username || 'User' }}</span>
               <i class="fas fa-chevron-down"></i>
             </button>
             <div class="dropdown-menu">
+              <div class="dropdown-header">
+                <AvatarPlaceholder
+                  :src="userAvatar"
+                  :name="user?.username || 'User'"
+                  :alt="user?.username || 'User Avatar'"
+                  size="medium"
+                  variant="circle"
+                  class="dropdown-avatar"
+                />
+                <div class="user-info">
+                  <div class="user-name">{{ user?.username || 'User' }}</div>
+                  <div class="user-email">{{ user?.email || '' }}</div>
+                  <div class="user-role">{{ getRoleDisplayName(user?.role) }}</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <router-link to="/profile" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Профиль
+              </router-link>
               <router-link v-if="isModerator" to="/recordings/new" class="dropdown-item">
                 <i class="fas fa-plus"></i>
                 Новая запись
@@ -32,7 +61,8 @@
                 <i class="fas fa-cog"></i>
                 Админ панель
               </router-link>
-              <button @click="logout" class="dropdown-item">
+              <div class="dropdown-divider"></div>
+              <button @click="logout" class="dropdown-item logout-item">
                 <i class="fas fa-sign-out-alt"></i>
                 Выйти
               </button>
@@ -60,9 +90,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import AvatarPlaceholder from './AvatarPlaceholder.vue'
 
 export default {
   name: 'Navbar',
+  components: {
+    AvatarPlaceholder
+  },
   data() {
     return {
       isScrolled: false,
@@ -73,6 +107,10 @@ export default {
     ...mapGetters(['isAuthenticated', 'isAdmin', 'isModerator']),
     user() {
       return this.$store.state.user
+    },
+    userAvatar() {
+      // Safely access avatar property with fallback
+      return this.user?.avatar || this.user?.avatar_url || null
     }
   },
   mounted() {
@@ -95,6 +133,14 @@ export default {
       this.$store.dispatch('logout')
       this.$router.push('/')
       this.closeMobileMenu()
+    },
+    getRoleDisplayName(role) {
+      const roleNames = {
+        'admin': 'Администратор',
+        'moderator': 'Модератор',
+        'user': 'Пользователь'
+      }
+      return roleNames[role] || 'Пользователь'
     }
   }
 }
@@ -178,6 +224,22 @@ export default {
   position: relative;
 }
 
+.user-menu-toggle {
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+}
+
+.user-avatar {
+  margin-right: 0.5rem;
+}
+
+.username {
+    max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .dropdown-toggle:hover + .dropdown-menu,
 .dropdown-menu:hover {
   opacity: 1;
@@ -191,22 +253,74 @@ export default {
   right: 0;
   background: rgba(30, 60, 114, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 8px;
-  padding: 0.5rem 0;
-  min-width: 200px;
+  border-radius: 12px;
+  padding: 0;
+  min-width: 280px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-avatar {
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #ffd700;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.5rem;
   text-decoration: none;
   color: #ffffff;
   background: none;
@@ -214,6 +328,7 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
+  text-align: left;
 }
 
 .dropdown-item:hover {
@@ -222,8 +337,19 @@ export default {
 }
 
 .dropdown-item i {
-  margin-right: 0.5rem;
+  margin-right: 0.75rem;
   width: 16px;
+  text-align: center;
+}
+
+.logout-item {
+  color: #ff6b6b;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-item:hover {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
 }
 
 .navbar-auth {
@@ -281,12 +407,22 @@ export default {
     width: 100%;
     justify-content: flex-start;
     margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
   }
   
   .navbar-auth {
     flex-direction: column;
     width: 100%;
     gap: 0.5rem;
+  }
+  
+  .navbar-dropdown {
+    width: 100%;
+  }
+  
+  .user-menu-toggle {
+    width: 100%;
+    justify-content: flex-start;
   }
   
   .dropdown-menu {
@@ -296,6 +432,37 @@ export default {
     transform: none;
     background: rgba(255, 255, 255, 0.1);
     margin-top: 0.5rem;
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .dropdown-header {
+    padding: 1rem;
+  }
+  
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-brand span {
+    display: none;
+  }
+  
+  .username {
+    max-width: 80px;
+  }
+  
+  .dropdown-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .user-info {
+    text-align: center;
   }
 }
 </style>
+

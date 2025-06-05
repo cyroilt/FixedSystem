@@ -1,196 +1,273 @@
 <template>
-  <div class="profile">
+  <div class="profile bg-darker-gradient particles-bg">
     <div class="container">
       <!-- Profile Header -->
-      <div class="profile-header" data-aos="fade-up">
+      <div class="profile-header animate-fade-in-up">
         <div class="profile-avatar">
-          <div class="avatar-circle">
+          <img 
+            v-if="user.avatar" 
+            :src="user.avatar" 
+            :alt="user.username"
+            class="avatar-image hover-scale"
+          >
+          <div v-else class="avatar-placeholder animate-pulse">
             <i class="fas fa-user"></i>
           </div>
-          <button v-if="isOwnProfile" @click="showAvatarModal = true" class="avatar-edit">
+          <button 
+            v-if="isOwnProfile" 
+            @click="showAvatarUpload = true"
+            class="avatar-edit hover-glow"
+            title="Изменить аватар"
+          >
             <i class="fas fa-camera"></i>
           </button>
         </div>
         
         <div class="profile-info">
-          <h1 class="profile-name">{{ profileUser.username }}</h1>
-          <p class="profile-role">{{ getUserRole(profileUser) }}</p>
-          <p class="profile-email">{{ profileUser.email }}</p>
-          
-          <div class="profile-stats">
-            <div class="stat">
-              <span class="stat-number">{{ userStats.recordings }}</span>
-              <span class="stat-label">Записей</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number">{{ userStats.views }}</span>
-              <span class="stat-label">Просмотров</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number">{{ formatDate(profileUser.created_at, 'short') }}</span>
-              <span class="stat-label">Регистрация</span>
-            </div>
+          <h1 class="profile-name animate-glow">{{ user.username }}</h1>
+          <p class="profile-email">{{ user.email }}</p>
+          <div class="profile-badges">
+            <span class="badge" :class="getRoleBadgeClass(user.role)">
+              <i :class="getRoleIcon(user.role)"></i>
+              {{ getRoleText(user.role) }}
+            </span>
+            <span class="badge badge-date">
+              <i class="fas fa-calendar"></i>
+              Регистрация: {{ formatDate(user.created_at) }}
+            </span>
           </div>
-          
-          <div v-if="isOwnProfile" class="profile-actions">
-            <button @click="showEditModal = true" class="btn btn-primary">
-              <i class="fas fa-edit"></i>
-              Редактировать профиль
-            </button>
-            <button @click="showPasswordModal = true" class="btn btn-secondary">
-              <i class="fas fa-key"></i>
-              Сменить пароль
-            </button>
+        </div>
+        
+        <div v-if="isOwnProfile" class="profile-actions">
+          <button @click="showEditModal = true" class="btn btn-primary hover-scale">
+            <i class="fas fa-edit"></i>
+            Редактировать профиль
+          </button>
+          <button @click="showSettingsModal = true" class="btn btn-secondary hover-glow">
+            <i class="fas fa-cog"></i>
+            Настройки
+          </button>
+        </div>
+      </div>
+
+      <!-- Profile Stats -->
+      <div class="profile-stats animate-fade-in-up animate-stagger-2">
+        <div class="stat-card hover-lift animate-scale-in">
+          <div class="stat-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ userStats.recordings || 0 }}</div>
+            <div class="stat-label">Записей</div>
+          </div>
+        </div>
+        
+        <div class="stat-card hover-lift animate-scale-in animate-stagger-2">
+          <div class="stat-icon">
+            <i class="fas fa-eye"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ userStats.views || 0 }}</div>
+            <div class="stat-label">Просмотров</div>
+          </div>
+        </div>
+        
+        <div class="stat-card hover-lift animate-scale-in animate-stagger-3">
+          <div class="stat-icon">
+            <i class="fas fa-thumbs-up"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ userStats.likes || 0 }}</div>
+            <div class="stat-label">Лайков</div>
+          </div>
+        </div>
+        
+        <div class="stat-card hover-lift animate-scale-in animate-stagger-4">
+          <div class="stat-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ userStats.rating || 0 }}</div>
+            <div class="stat-label">Рейтинг</div>
           </div>
         </div>
       </div>
 
-      <!-- Profile Content -->
-      <div class="profile-content">
-        <!-- Navigation Tabs -->
-        <div class="profile-tabs" data-aos="fade-up" data-aos-delay="100">
+      <!-- Profile Tabs -->
+      <div class="profile-tabs animate-fade-in-up animate-stagger-3">
+        <div class="tabs-header">
           <button
             v-for="tab in tabs"
-            :key="tab.key"
-            @click="activeTab = tab.key"
-            :class="['tab-btn', { active: activeTab === tab.key }]"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            class="tab-button hover-glow"
+            :class="{ active: activeTab === tab.id }"
           >
             <i :class="tab.icon"></i>
             {{ tab.label }}
           </button>
         </div>
-
-        <!-- Tab Content -->
-        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
-          <!-- Recordings Tab -->
-          <div v-if="activeTab === 'recordings'" class="recordings-tab">
-            <div class="tab-header">
-              <h3>Мои записи</h3>
-              <div class="tab-filters">
-                <select v-model="recordingsFilter" class="filter-select">
-                  <option value="all">Все записи</option>
-                  <option value="published">Опубликованные</option>
-                  <option value="draft">Черновики</option>
-                </select>
-              </div>
+        
+        <div class="tabs-content">
+          <!-- User Recordings Tab -->
+          <div v-if="activeTab === 'recordings'" class="tab-content animate-fade-in-up">
+            <div v-if="loadingRecordings" class="loading">
+              <div class="loading-spinner"></div>
+              <p class="loading-dots">Загрузка записей</p>
             </div>
             
-            <div v-if="userRecordings.length > 0" class="recordings-grid">
+            <div v-else-if="userRecordings.length > 0" class="recordings-grid">
               <div
-                v-for="recording in filteredRecordings"
+                v-for="(recording, index) in userRecordings"
                 :key="recording.id"
-                class="recording-card"
+                class="recording-card hover-lift animate-fade-in-up"
+                :class="`animate-stagger-${Math.min(index + 1, 5)}`"
                 @click="viewRecording(recording.id)"
               >
                 <div class="recording-image" v-if="recording.image_path">
-                  <img :src="recording.image_path" :alt="recording.title">
+                  <img :src="getImageUrl(recording.image_path)" :alt="recording.title">
                 </div>
+                <div v-else class="recording-placeholder">
+                  <i class="fas fa-video"></i>
+                </div>
+                
                 <div class="recording-content">
-                  <div class="recording-meta">
-                    <span class="recording-status" :class="recording.status">
-                      {{ getStatusLabel(recording.status) }}
-                    </span>
-                    <span class="recording-date">{{ formatDate(recording.created_at) }}</span>
-                  </div>
-                  <h4 class="recording-title">{{ recording.title }}</h4>
+                  <h3 class="recording-title">{{ recording.title }}</h3>
                   <p class="recording-excerpt">{{ truncateText(recording.content, 100) }}</p>
-                  <div class="recording-stats">
-                    <span><i class="fas fa-eye"></i> {{ recording.views || 0 }}</span>
-                    <span><i class="fas fa-heart"></i> {{ recording.likes || 0 }}</span>
+                  <div class="recording-meta">
+                    <span class="recording-date">
+                      <i class="fas fa-calendar"></i>
+                      {{ formatDate(recording.created_at) }}
+                    </span>
+                    <span class="recording-views">
+                      <i class="fas fa-eye"></i>
+                      {{ recording.views || 0 }}
+                    </span>
                   </div>
-                </div>
-                <div v-if="isOwnProfile" class="recording-actions">
-                  <button @click.stop="editRecording(recording.id)" class="action-btn edit-btn">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button @click.stop="deleteRecording(recording.id)" class="action-btn delete-btn">
-                    <i class="fas fa-trash"></i>
-                  </button>
                 </div>
               </div>
             </div>
             
             <div v-else class="empty-state">
-              <i class="fas fa-file-alt"></i>
+              <i class="fas fa-video animate-float"></i>
               <h3>Нет записей</h3>
-              <p>{{ isOwnProfile ? 'Вы еще не создали ни одной записи' : 'Пользователь не создал ни одной записи' }}</p>
-              <router-link v-if="isOwnProfile" to="/recordings/create" class="btn btn-primary">
+              <p>{{ isOwnProfile ? 'Вы еще не создали ни одной записи' : 'Пользователь еще не создал записей' }}</p>
+              <router-link v-if="isOwnProfile && isModerator" to="/recordings/new" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                Создать запись
+                Создать первую запись
               </router-link>
             </div>
           </div>
 
           <!-- Activity Tab -->
-          <div v-if="activeTab === 'activity'" class="activity-tab">
-            <h3>Активность</h3>
-            <div class="activity-timeline">
+          <div v-if="activeTab === 'activity'" class="tab-content animate-fade-in-up">
+            <div v-if="loadingActivity" class="loading">
+              <div class="loading-spinner"></div>
+                            <p class="loading-dots">Загрузка активности</p>
+            </div>
+            
+            <div v-else-if="userActivity.length > 0" class="activity-list">
               <div
-                v-for="activity in userActivity"
+                v-for="(activity, index) in userActivity"
                 :key="activity.id"
-                class="activity-item"
+                class="activity-item hover-lift animate-slide-in-left"
+                :class="`animate-stagger-${Math.min(index + 1, 5)}`"
               >
-                <div class="activity-icon">
+                <div class="activity-icon" :class="getActivityIconClass(activity.type)">
                   <i :class="getActivityIcon(activity.type)"></i>
                 </div>
                 <div class="activity-content">
-                  <p class="activity-text">{{ activity.description }}</p>
-                  <span class="activity-time">{{ formatDate(activity.created_at, 'relative') }}</span>
+                  <div class="activity-text">{{ getActivityText(activity) }}</div>
+                  <div class="activity-date">{{ formatRelativeDate(activity.created_at) }}</div>
                 </div>
               </div>
             </div>
             
-            <div v-if="userActivity.length === 0" class="empty-state">
-              <i class="fas fa-clock"></i>
+            <div v-else class="empty-state">
+              <i class="fas fa-history animate-float"></i>
               <h3>Нет активности</h3>
-              <p>История активности пуста</p>
+              <p>{{ isOwnProfile ? 'У вас пока нет активности' : 'У пользователя пока нет активности' }}</p>
             </div>
           </div>
 
           <!-- Settings Tab (only for own profile) -->
-          <div v-if="activeTab === 'settings' && isOwnProfile" class="settings-tab">
-            <h3>Настройки</h3>
-            <div class="settings-sections">
-              <div class="settings-section">
-                <h4>Уведомления</h4>
+          <div v-if="activeTab === 'settings' && isOwnProfile" class="tab-content animate-fade-in-up">
+            <div class="settings-section">
+              <h3>Уведомления</h3>
+              <div class="settings-group">
                 <div class="setting-item">
                   <label class="setting-label">
-                    <input type="checkbox" v-model="settings.emailNotifications">
+                    <input
+                      v-model="userSettings.emailNotifications"
+                      type="checkbox"
+                      class="setting-checkbox"
+                      @change="updateSettings"
+                    >
                     <span class="checkmark"></span>
                     Email уведомления
                   </label>
+                  <p class="setting-description">Получать уведомления на email</p>
                 </div>
+                
                 <div class="setting-item">
                   <label class="setting-label">
-                    <input type="checkbox" v-model="settings.pushNotifications">
+                    <input
+                      v-model="userSettings.pushNotifications"
+                      type="checkbox"
+                      class="setting-checkbox"
+                      @change="updateSettings"
+                    >
                     <span class="checkmark"></span>
                     Push уведомления
                   </label>
+                  <p class="setting-description">Получать push уведомления в браузере</p>
                 </div>
               </div>
-              
-              <div class="settings-section">
-                <h4>Приватность</h4>
+            </div>
+            
+            <div class="settings-section">
+              <h3>Приватность</h3>
+              <div class="settings-group">
                 <div class="setting-item">
                   <label class="setting-label">
-                    <input type="checkbox" v-model="settings.publicProfile">
+                    <input
+                      v-model="userSettings.publicProfile"
+                      type="checkbox"
+                      class="setting-checkbox"
+                      @change="updateSettings"
+                    >
                     <span class="checkmark"></span>
                     Публичный профиль
                   </label>
+                  <p class="setting-description">Разрешить другим пользователям видеть ваш профиль</p>
                 </div>
+                
                 <div class="setting-item">
                   <label class="setting-label">
-                    <input type="checkbox" v-model="settings.showEmail">
+                    <input
+                      v-model="userSettings.showEmail"
+                      type="checkbox"
+                      class="setting-checkbox"
+                      @change="updateSettings"
+                    >
                     <span class="checkmark"></span>
                     Показывать email
                   </label>
+                  <p class="setting-description">Показывать email адрес в профиле</p>
                 </div>
               </div>
-              
-              <div class="settings-actions">
-                <button @click="saveSettings" class="btn btn-primary">
-                  <i class="fas fa-save"></i>
-                  Сохранить настройки
+            </div>
+            
+            <div class="settings-section danger-zone">
+              <h3>Опасная зона</h3>
+              <div class="settings-group">
+                <button @click="showChangePasswordModal = true" class="btn btn-warning">
+                  <i class="fas fa-key"></i>
+                  Изменить пароль
+                </button>
+                <button @click="showDeleteAccountModal = true" class="btn btn-danger">
+                  <i class="fas fa-trash"></i>
+                  Удалить аккаунт
                 </button>
               </div>
             </div>
@@ -200,11 +277,11 @@
     </div>
 
     <!-- Edit Profile Modal -->
-    <div v-if="showEditModal" class="modal-overlay" @click="showEditModal = false">
-      <div class="modal" @click.stop>
+    <div v-if="showEditModal" class="modal-overlay animate-fade-in" @click="showEditModal = false">
+      <div class="modal animate-zoom-in" @click.stop>
         <div class="modal-header">
-          <h3>Редактировать профиль</h3>
-          <button @click="showEditModal = false" class="modal-close">
+          <h3 class="animate-glow">Редактировать профиль</h3>
+          <button @click="showEditModal = false" class="modal-close hover-scale">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -243,20 +320,21 @@
           <button @click="showEditModal = false" class="btn btn-secondary">
             Отмена
           </button>
-          <button @click="updateProfile" class="btn btn-primary">
-            <i class="fas fa-save"></i>
-            Сохранить
+          <button @click="updateProfile" class="btn btn-primary" :disabled="updatingProfile">
+            <i class="fas fa-spinner animate-spin" v-if="updatingProfile"></i>
+            <i class="fas fa-save" v-else></i>
+            {{ updatingProfile ? 'Сохранение...' : 'Сохранить' }}
           </button>
         </div>
       </div>
     </div>
 
     <!-- Change Password Modal -->
-    <div v-if="showPasswordModal" class="modal-overlay" @click="showPasswordModal = false">
-      <div class="modal" @click.stop>
+    <div v-if="showChangePasswordModal" class="modal-overlay animate-fade-in" @click="showChangePasswordModal = false">
+      <div class="modal animate-zoom-in" @click.stop>
         <div class="modal-header">
-          <h3>Сменить пароль</h3>
-          <button @click="showPasswordModal = false" class="modal-close">
+          <h3 class="animate-glow">Изменить пароль</h3>
+          <button @click="showChangePasswordModal = false" class="modal-close hover-scale">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -293,48 +371,54 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button @click="showPasswordModal = false" class="btn btn-secondary">
+          <button @click="showChangePasswordModal = false" class="btn btn-secondary">
             Отмена
           </button>
-          <button @click="changePassword" class="btn btn-primary">
-            <i class="fas fa-key"></i>
-            Сменить пароль
+          <button @click="changePassword" class="btn btn-primary" :disabled="changingPassword">
+            <i class="fas fa-spinner animate-spin" v-if="changingPassword"></i>
+            <i class="fas fa-key" v-else></i>
+            {{ changingPassword ? 'Изменение...' : 'Изменить пароль' }}
           </button>
         </div>
       </div>
     </div>
 
     <!-- Avatar Upload Modal -->
-    <div v-if="showAvatarModal" class="modal-overlay" @click="showAvatarModal = false">
-      <div class="modal" @click.stop>
+    <div v-if="showAvatarUpload" class="modal-overlay animate-fade-in" @click="showAvatarUpload = false">
+      <div class="modal animate-zoom-in" @click.stop>
         <div class="modal-header">
-          <h3>Изменить аватар</h3>
-          <button @click="showAvatarModal = false" class="modal-close">
+          <h3 class="animate-glow">Изменить аватар</h3>
+          <button @click="showAvatarUpload = false" class="modal-close hover-scale">
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="modal-body">
-          <div class="avatar-upload">
+          <div class="avatar-upload-container">
             <input
               ref="avatarInput"
               type="file"
               accept="image/*"
-              @change="handleAvatarSelect"
+              @change="handleAvatarUpload"
               class="file-input"
+              id="avatar-upload"
             >
-            <div class="upload-area" @click="$refs.avatarInput.click()">
-              <i class="fas fa-camera"></i>
-              <p>Выберите изображение</p>
+            <label for="avatar-upload" class="avatar-upload-label hover-lift">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>Выбрать изображение</span>
+            </label>
+            <div v-if="avatarPreview" class="avatar-preview animate-scale-in">
+              <img :src="avatarPreview" alt="Avatar Preview" class="preview-avatar">
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="showAvatarModal = false" class="btn btn-secondary">
+          <button @click="showAvatarUpload = false" class="btn btn-secondary">
             Отмена
           </button>
-          <button @click="uploadAvatar" class="btn btn-primary">
-            <i class="fas fa-upload"></i>
-            Загрузить
+          <button @click="uploadAvatar" class="btn btn-primary" :disabled="!avatarFile || uploadingAvatar">
+            <i class="fas fa-spinner animate-spin" v-if="uploadingAvatar"></i>
+            <i class="fas fa-upload" v-else></i>
+            {{ uploadingAvatar ? 'Загрузка...' : 'Загрузить' }}
           </button>
         </div>
       </div>
@@ -343,30 +427,34 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'Profile',
+  props: {
+    userId: {
+      type: [String, Number],
+      default: null
+    }
+  },
   data() {
     return {
-      profileUser: {},
-      userStats: {
-        recordings: 0,
-        views: 0
-      },
+      activeTab: 'recordings',
+      userStats: {},
       userRecordings: [],
       userActivity: [],
-      activeTab: 'recordings',
-      recordingsFilter: 'all',
-      settings: {
+      userSettings: {
         emailNotifications: true,
         pushNotifications: false,
         publicProfile: true,
         showEmail: false
       },
+      loadingRecordings: false,
+      loadingActivity: false,
       showEditModal: false,
-      showPasswordModal: false,
-      showAvatarModal: false,
+      showSettingsModal: false,
+      showChangePasswordModal: false,
+      showAvatarUpload: false,
       editForm: {
         username: '',
         email: '',
@@ -378,79 +466,99 @@ export default {
         confirmPassword: ''
       },
       avatarFile: null,
+      avatarPreview: null,
+      updatingProfile: false,
+      changingPassword: false,
+      uploadingAvatar: false,
       tabs: [
-        { key: 'recordings', label: 'Записи', icon: 'fas fa-file-alt' },
-        { key: 'activity', label: 'Активность', icon: 'fas fa-clock' },
-        { key: 'settings', label: 'Настройки', icon: 'fas fa-cog' }
+        { id: 'recordings', label: 'Записи', icon: 'fas fa-video' },
+        { id: 'activity', label: 'Активность', icon: 'fas fa-history' },
+        { id: 'settings', label: 'Настройки', icon: 'fas fa-cog' }
       ]
     }
   },
   computed: {
-    ...mapGetters(['isAuthenticated', 'isAdmin']),
     ...mapState(['user']),
+    ...mapGetters(['isAuthenticated', 'isModerator']),
     isOwnProfile() {
-      return this.isAuthenticated && this.user && this.profileUser.id === this.user.id
+      return !this.userId || this.userId == this.user?.id
     },
-    filteredRecordings() {
-      if (this.recordingsFilter === 'all') return this.userRecordings
-      return this.userRecordings.filter(recording => recording.status === this.recordingsFilter)
+    profileUser() {
+      return this.isOwnProfile ? this.user : this.targetUser
     }
   },
   async created() {
-    const userId = this.$route.params.id || (this.user && this.user.id)
-    if (!userId) {
-      this.$router.push('/login')
-      return
-    }
-    
-    await this.loadProfile(userId)
-    
-    // Remove settings tab if not own profile
-    if (!this.isOwnProfile) {
-      this.tabs = this.tabs.filter(tab => tab.key !== 'settings')
-    }
+    await this.loadProfileData()
   },
   watch: {
-    '$route.params.id': {
-      handler(newId) {
-        const userId = newId || (this.user && this.user.id)
-        if (userId) {
-          this.loadProfile(userId)
-        }
+    activeTab(newTab) {
+      if (newTab === 'recordings' && this.userRecordings.length === 0) {
+        this.fetchUserRecordings()
+      } else if (newTab === 'activity' && this.userActivity.length === 0) {
+        this.fetchUserActivity()
       }
     }
   },
   methods: {
-    async loadProfile(userId) {
+    async loadProfileData() {
       try {
-        this.profileUser = await this.$store.dispatch('fetchUserProfile', userId)
-        this.userStats = await this.$store.dispatch('fetchUserStats', userId)
-        this.userRecordings = await this.$store.dispatch('fetchUserRecordings', userId)
-        this.userActivity = await this.$store.dispatch('fetchUserActivity', userId)
+        // Load user stats
+        this.userStats = await this.$store.dispatch('fetchUserStats', this.userId || this.user.id)
         
+        // Load user settings if own profile
         if (this.isOwnProfile) {
+          this.userSettings = await this.$store.dispatch('fetchUserSettings')
           this.editForm = {
-            username: this.profileUser.username,
-            email: this.profileUser.email,
-            bio: this.profileUser.bio || ''
+            username: this.user.username,
+            email: this.user.email,
+            bio: this.user.bio || ''
           }
-          
-          // Load user settings
-          this.settings = await this.$store.dispatch('fetchUserSettings')
+        }
+        
+        // Load initial tab data
+        if (this.activeTab === 'recordings') {
+          await this.fetchUserRecordings()
         }
       } catch (error) {
-        console.error('Error loading profile:', error)
-        this.$router.push('/404')
+        console.error('Error loading profile data:', error)
+      }
+    },
+    async fetchUserRecordings() {
+      this.loadingRecordings = true
+      try {
+        this.userRecordings = await this.$store.dispatch('fetchUserRecordings', this.userId || this.user.id)
+      } catch (error) {
+        console.error('Error fetching user recordings:', error)
+      } finally {
+        this.loadingRecordings = false
+      }
+    },
+    async fetchUserActivity() {
+      this.loadingActivity = true
+      try {
+        this.userActivity = await this.$store.dispatch('fetchUserActivity', this.userId || this.user.id)
+      } catch (error) {
+        console.error('Error fetching user activity:', error)
+      } finally {
+        this.loadingActivity = false
       }
     },
     async updateProfile() {
+      if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+        alert('Пароли не совпадают')
+        return
+      }
+      
+      this.updatingProfile = true
       try {
         await this.$store.dispatch('updateUserProfile', this.editForm)
-        this.profileUser = { ...this.profileUser, ...this.editForm }
         this.showEditModal = false
+        // Show success message
       } catch (error) {
         console.error('Error updating profile:', error)
-        alert('Ошибка при обновлении профиля')
+        // Show error message
+      } finally {
+        this.updatingProfile = false
       }
     },
     async changePassword() {
@@ -459,128 +567,161 @@ export default {
         return
       }
       
+      this.changingPassword = true
       try {
-        await this.$store.dispatch('changePassword', {
-          currentPassword: this.passwordForm.currentPassword,
-          newPassword: this.passwordForm.newPassword
-        })
-        
+        await this.$store.dispatch('changePassword', this.passwordForm)
+        this.showChangePasswordModal = false
         this.passwordForm = {
-          currentPassword: '',
+                    currentPassword: '',
           newPassword: '',
           confirmPassword: ''
         }
-        this.showPasswordModal = false
-        alert('Пароль успешно изменен')
+        // Show success message
       } catch (error) {
         console.error('Error changing password:', error)
-        alert('Ошибка при смене пароля')
+        // Show error message
+      } finally {
+        this.changingPassword = false
       }
     },
-    async saveSettings() {
+    async updateSettings() {
       try {
-        await this.$store.dispatch('updateUserSettings', this.settings)
-        alert('Настройки сохранены')
+        await this.$store.dispatch('updateUserSettings', this.userSettings)
       } catch (error) {
-        console.error('Error saving settings:', error)
-        alert('Ошибка при сохранении настроек')
+        console.error('Error updating settings:', error)
       }
     },
-    handleAvatarSelect(event) {
+    handleAvatarUpload(event) {
       const file = event.target.files[0]
-      if (file) {
-        this.avatarFile = file
+      if (!file) return
+      
+      if (!file.type.startsWith('image/')) {
+        alert('Пожалуйста, выберите изображение')
+        return
       }
+      
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Размер изображения не должен превышать 2MB')
+        return
+      }
+      
+      this.avatarFile = file
+      
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.avatarPreview = e.target.result
+      }
+      reader.readAsDataURL(file)
     },
     async uploadAvatar() {
       if (!this.avatarFile) return
       
+      this.uploadingAvatar = true
       try {
         const formData = new FormData()
         formData.append('avatar', this.avatarFile)
         
         await this.$store.dispatch('uploadAvatar', formData)
-        this.showAvatarModal = false
+        this.showAvatarUpload = false
         this.avatarFile = null
-        
-        // Reload profile to get updated avatar
-        await this.loadProfile(this.profileUser.id)
+        this.avatarPreview = null
+        // Show success message
       } catch (error) {
         console.error('Error uploading avatar:', error)
-        alert('Ошибка при загрузке аватара')
+        // Show error message
+      } finally {
+        this.uploadingAvatar = false
       }
     },
     viewRecording(id) {
       this.$router.push(`/recordings/${id}`)
     },
-    editRecording(id) {
-      this.$router.push(`/recordings/${id}/edit`)
-    },
-    async deleteRecording(id) {
-      if (!confirm('Вы уверены, что хотите удалить эту запись?')) return
-      
-      try {
-        await this.$store.dispatch('deleteRecording', id)
-        this.userRecordings = this.userRecordings.filter(r => r.id !== id)
-      } catch (error) {
-        console.error('Error deleting recording:', error)
-        alert('Ошибка при удалении записи')
+    getImageUrl(imagePath) {
+      if (!imagePath) return null
+      if (imagePath.startsWith('http')) return imagePath
+      if (imagePath.startsWith('/uploads/')) {
+        return `http://localhost:5000${imagePath}`
       }
+      return `http://localhost:5000/uploads/${imagePath}`
     },
-    getUserRole(user) {
-      if (user.role === 'admin') return 'Администратор'
-      if (user.role === 'moderator') return 'Модератор'
-      return 'Пользователь'
-    },
-    getStatusLabel(status) {
-      const labels = {
-        published: 'Опубликовано',
-        draft: 'Черновик',
-        pending: 'На модерации'
+    getRoleBadgeClass(role) {
+      const classes = {
+        admin: 'badge-admin',
+        moderator: 'badge-moderator',
+        user: 'badge-user'
       }
-      return labels[status] || status
+      return classes[role] || 'badge-user'
+    },
+    getRoleIcon(role) {
+      const icons = {
+        admin: 'fas fa-crown',
+        moderator: 'fas fa-shield-alt',
+        user: 'fas fa-user'
+      }
+      return icons[role] || 'fas fa-user'
+    },
+    getRoleText(role) {
+      const texts = {
+        admin: 'Администратор',
+        moderator: 'Модератор',
+        user: 'Пользователь'
+      }
+      return texts[role] || 'Пользователь'
+    },
+    getActivityIconClass(type) {
+      const classes = {
+        create: 'activity-create',
+        update: 'activity-update',
+        delete: 'activity-delete',
+        view: 'activity-view'
+      }
+      return classes[type] || 'activity-default'
     },
     getActivityIcon(type) {
       const icons = {
-        created_recording: 'fas fa-plus',
-        updated_recording: 'fas fa-edit',
-        deleted_recording: 'fas fa-trash',
-        login: 'fas fa-sign-in-alt',
-        profile_update: 'fas fa-user-edit'
+        create: 'fas fa-plus',
+        update: 'fas fa-edit',
+        delete: 'fas fa-trash',
+        view: 'fas fa-eye'
       }
       return icons[type] || 'fas fa-circle'
+    },
+    getActivityText(activity) {
+      const texts = {
+        create: `Создал запись "${activity.title}"`,
+        update: `Обновил запись "${activity.title}"`,
+        delete: `Удалил запись "${activity.title}"`,
+        view: `Просмотрел запись "${activity.title}"`
+      }
+      return texts[activity.type] || 'Неизвестное действие'
     },
     truncateText(text, length) {
       if (!text) return ''
       return text.length > length ? text.substring(0, length) + '...' : text
     },
-    formatDate(dateString, format = 'default') {
+    formatDate(dateString) {
       const date = new Date(dateString)
-      
-      if (format === 'short') {
-        return date.toLocaleDateString('ru-RU', {
-          month: 'short',
-          year: 'numeric'
-        })
-      }
-      
-      if (format === 'relative') {
-        const now = new Date()
-        const diff = now - date
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        
-        if (days === 0) return 'Сегодня'
-        if (days === 1) return 'Вчера'
-        if (days < 7) return `${days} дней назад`
-        if (days < 30) return `${Math.floor(days / 7)} недель назад`
-        return date.toLocaleDateString('ru-RU')
-      }
-      
       return date.toLocaleDateString('ru-RU', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       })
+    },
+    formatRelativeDate(dateString) {
+      const date = new Date(dateString)
+      const now = new Date()
+      const diff = now - date
+      
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(diff / 3600000)
+      const days = Math.floor(diff / 86400000)
+      
+      if (minutes < 1) return 'Только что'
+      if (minutes < 60) return `${minutes} мин назад`
+      if (hours < 24) return `${hours} ч назад`
+      if (days < 7) return `${days} дн назад`
+      
+      return this.formatDate(dateString)
     }
   }
 }
@@ -589,18 +730,19 @@ export default {
 <style scoped>
 .profile {
   padding: 2rem 0;
+  min-height: 100vh;
 }
 
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 3rem;
-  margin-bottom: 4rem;
-  padding: 3rem;
-  background: rgba(255, 255, 255, 0.1);
+  gap: 2rem;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .profile-avatar {
@@ -608,16 +750,26 @@ export default {
   flex-shrink: 0;
 }
 
-.avatar-circle {
+.avatar-image,
+.avatar-placeholder {
   width: 120px;
   height: 120px;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
   border-radius: 50%;
+  border: 4px solid #ffd700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.avatar-image {
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 3rem;
-  color: #1e3c72;
 }
 
 .avatar-edit {
@@ -635,10 +787,12 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .avatar-edit:hover {
   transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
 }
 
 .profile-info {
@@ -648,138 +802,181 @@ export default {
 .profile-name {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-}
-
-.profile-role {
   color: #ffd700;
-  font-size: 1.1rem;
-  font-weight: 600;
   margin-bottom: 0.5rem;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
 .profile-email {
+  font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
-.profile-stats {
+.profile-badges {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.stat {
-  text-align: center;
-}
-
-.stat-number {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #ffd700;
-}
-
-.stat-label {
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.badge i {
+  margin-right: 0.5rem;
+}
+
+.badge-admin {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.badge-moderator {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.badge-user {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.badge-date {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .profile-actions {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #1e3c72;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffd700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
 }
 
 .profile-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
 
-.tab-btn {
-  padding: 1rem 2rem;
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 1.5rem;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-bottom: 2px solid transparent;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
-.tab-btn:hover {
+.tab-button:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-button.active {
   color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  border-bottom: 2px solid #ffd700;
 }
 
-.tab-btn.active {
-  color: #ffd700;
-  border-bottom-color: #ffd700;
-}
-
-.tab-content {
-  min-height: 400px;
-}
-
-.tab-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.tab-header h3 {
-  color: #ffd700;
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-.tab-filters {
-  display: flex;
-  gap: 1rem;
-}
-
-.filter-select {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: #ffffff;
-  font-size: 0.9rem;
-}
-
-.filter-select option {
-  background: #1e3c72;
-  color: #ffffff;
+.tabs-content {
+  padding: 2rem;
 }
 
 .recordings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
 .recording-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   cursor: pointer;
-  position: relative;
 }
 
 .recording-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.3);
 }
 
 .recording-image {
-  height: 200px;
+  height: 150px;
   overflow: hidden;
 }
 
@@ -794,144 +991,106 @@ export default {
   transform: scale(1.1);
 }
 
+.recording-placeholder {
+  height: 150px;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 2rem;
+}
+
 .recording-content {
   padding: 1.5rem;
+}
+
+.recording-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.recording-excerpt {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
 }
 
 .recording-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.recording-status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.recording-status.published {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-.recording-status.draft {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-}
-
-.recording-status.pending {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-}
-
-.recording-date {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.8rem;
 }
 
-.recording-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 0.75rem;
-  line-height: 1.3;
-}
-
-.recording-excerpt {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-
-.recording-stats {
-  display: flex;
-  gap: 1rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.8rem;
-}
-
-.recording-stats span {
+.recording-date,
+.recording-views {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 
-.recording-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+.activity-list {
   display: flex;
-  gap: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.recording-card:hover .recording-actions {
-  opacity: 1;
-}
-
-.action-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.edit-btn {
-  background: rgba(59, 130, 246, 0.8);
-  color: #ffffff;
-}
-
-.edit-btn:hover {
-  background: #3b82f6;
-  transform: scale(1.1);
-}
-
-.delete-btn {
-  background: rgba(239, 68, 68, 0.8);
-  color: #ffffff;
-}
-
-.delete-btn:hover {
-  background: #ef4444;
-  transform: scale(1.1);
-}
-
-.activity-timeline {
-  max-height: 600px;
-  overflow-y: auto;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .activity-item {
   display: flex;
+  align-items: center;
   gap: 1rem;
-  padding: 1.5rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  margin-bottom: 1rem;
-  border-left: 3px solid #ffd700;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
 }
 
 .activity-icon {
   width: 40px;
   height: 40px;
-  background: rgba(255, 215, 0, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffd700;
+  font-size: 1rem;
   flex-shrink: 0;
+}
+
+.activity-create {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+.activity-update {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+}
+
+.activity-delete {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+
+.activity-view {
+  background: rgba(155, 89, 182, 0.2);
+  color: #9b59b6;
+}
+
+.activity-default {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .activity-content {
@@ -940,46 +1099,51 @@ export default {
 
 .activity-text {
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0.5rem;
-  line-height: 1.5;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
 }
 
-.activity-time {
-  color: rgba(255, 255, 255, 0.6);
+.activity-date {
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.8rem;
 }
 
-.settings-sections {
-  max-width: 600px;
-}
-
 .settings-section {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 2rem;
   margin-bottom: 2rem;
 }
 
-.settings-section h4 {
+.settings-section h3 {
   color: #ffd700;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .setting-item {
-  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .setting-label {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
 }
 
-.setting-label input[type="checkbox"] {
+.setting-checkbox {
   display: none;
 }
 
@@ -989,53 +1153,94 @@ export default {
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 4px;
+  margin-right: 0.75rem;
   position: relative;
   transition: all 0.3s ease;
 }
 
-.setting-label input[type="checkbox"]:checked + .checkmark {
+.setting-checkbox:checked + .checkmark {
   background: #ffd700;
   border-color: #ffd700;
 }
 
-.setting-label input[type="checkbox"]:checked + .checkmark::after {
-  content: '';
+.setting-checkbox:checked + .checkmark::after {
+  content: '✓';
   position: absolute;
-  left: 6px;
-  top: 2px;
-  width: 6px;
-  height: 10px;
-  border: solid #1e3c72;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #1e3c72;
+  font-weight: bold;
+  font-size: 0.8rem;
 }
 
-.settings-actions {
-  text-align: right;
+.setting-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.danger-zone {
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: rgba(231, 76, 60, 0.05);
+}
+
+.danger-zone h3 {
+  color: #e74c3c;
+  border-bottom-color: rgba(231, 76, 60, 0.3);
+}
+
+.danger-zone .settings-group {
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .empty-state {
   text-align: center;
-  padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.8);
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .empty-state i {
   font-size: 4rem;
-  color: #ffd700;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .empty-state h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.empty-state p {
-  font-size: 1rem;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+  90%, 100% { content: ''; }
 }
 
 .modal-overlay {
@@ -1074,16 +1279,17 @@ export default {
 .modal-header h3 {
   color: #ffd700;
   margin: 0;
+  font-size: 1.3rem;
 }
 
 .modal-close {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 50%;
+  border-radius: 4px;
   transition: all 0.3s ease;
 }
 
@@ -1110,17 +1316,17 @@ export default {
 
 .form-label {
   display: block;
-  color: rgba(255, 255, 255, 0.9);
+  color: #ffd700;
+  font-weight: 600;
   margin-bottom: 0.5rem;
-  font-weight: 500;
 }
 
 .form-input,
 .form-textarea {
   width: 100%;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   color: #ffffff;
   font-size: 1rem;
@@ -1134,17 +1340,12 @@ export default {
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
 }
 
-.form-input::placeholder,
-.form-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
 .form-textarea {
   resize: vertical;
   min-height: 100px;
 }
 
-.avatar-upload {
+.avatar-upload-container {
   text-align: center;
 }
 
@@ -1152,63 +1353,236 @@ export default {
   display: none;
 }
 
-.upload-area {
+.avatar-upload-label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
   border: 2px dashed rgba(255, 255, 255, 0.3);
   border-radius: 12px;
-  padding: 3rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.upload-area:hover {
+.avatar-upload-label:hover {
   border-color: #ffd700;
-  background: rgba(255, 215, 0, 0.05);
-}
-
-.upload-area i {
-  font-size: 3rem;
+  background: rgba(255, 215, 0, 0.1);
   color: #ffd700;
-  margin-bottom: 1rem;
 }
 
-.upload-area p {
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0;
+.avatar-upload-label i {
+  font-size: 2rem;
+}
+
+.avatar-preview {
+  margin-top: 1rem;
+}
+
+.preview-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffd700;
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-stagger-1 { animation-delay: 0.1s; }
+.animate-stagger-2 { animation-delay: 0.2s; }
+.animate-stagger-3 { animation-delay: 0.3s; }
+.animate-stagger-4 { animation-delay: 0.4s; }
+.animate-stagger-5 { animation-delay: 0.5s; }
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
     text-align: center;
-    gap: 2rem;
+    gap: 1.5rem;
   }
   
   .profile-stats {
-    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  .profile-actions {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .profile-tabs {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .tab-header {
+  .tabs-header {
     flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
+  }
+  
+  .tab-button {
+    padding: 1rem;
   }
   
   .recordings-grid {
     grid-template-columns: 1fr;
   }
   
+  .danger-zone .settings-group {
+    flex-direction: column;
+  }
+  
+  .modal {
+    margin: 1rem;
+  }
+  
   .modal-footer {
     flex-direction: column;
   }
 }
+
+@media (max-width: 480px) {
+  .profile {
+    padding: 1rem 0;
+  }
+  
+  .profile-header {
+    padding: 1.5rem;
+  }
+  
+  .profile-name {
+    font-size: 2rem;
+  }
+  
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs-content {
+    padding: 1rem;
+  }
+}
 </style>
+0
+
+

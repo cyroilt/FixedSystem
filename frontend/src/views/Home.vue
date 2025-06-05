@@ -1,21 +1,21 @@
 <template>
-  <div class="home">
+  <div class="home bg-darker-gradient particles-bg">
     <!-- Hero Section -->
     <section class="hero">
       <div class="container">
-        <div class="hero-content" data-aos="fade-up">
-          <h1 class="hero-title animate__animated animate__fadeInUp">
+        <div class="hero-content animate-fade-in-up">
+          <h1 class="hero-title animate-glow">
             Добро пожаловать в Faculty Portal
           </h1>
-          <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s">
+          <p class="hero-subtitle animate-fade-in-up animate-stagger-2">
             Современная система управления записями факультета с удобным интерфейсом
           </p>
-          <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-2s">
-            <router-link to="/recordings" class="btn btn-primary">
+          <div class="hero-buttons animate-slide-in-up animate-stagger-3">
+            <router-link to="/recordings" class="btn btn-primary hover-lift animate-pulse">
               <i class="fas fa-video"></i>
               Просмотреть записи
             </router-link>
-            <router-link v-if="!isAuthenticated" to="/register" class="btn btn-secondary">
+            <router-link v-if="!isAuthenticated" to="/register" class="btn btn-secondary hover-scale">
               <i class="fas fa-user-plus"></i>
               Присоединиться
             </router-link>
@@ -24,40 +24,42 @@
       </div>
       <div class="hero-background">
         <div class="floating-shapes">
-          <div class="shape shape-1"></div>
-          <div class="shape shape-2"></div>
-          <div class="shape shape-3"></div>
+          <div class="shape shape-1 animate-float"></div>
+          <div class="shape shape-2 animate-float animate-stagger-2"></div>
+          <div class="shape shape-3 animate-float animate-stagger-4"></div>
+          <div class="shape shape-4 animate-rotate-in animate-stagger-3"></div>
+          <div class="shape shape-5 animate-bounce-in animate-stagger-5"></div>
         </div>
       </div>
     </section>
 
     <!-- Faculty History Section -->
-    <section class="faculty-history">
+    <section class="faculty-history bg-space-gradient">
       <div class="container">
-        <h2 class="section-title" data-aos="fade-up">История факультета</h2>
+        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">История факультета</h2>
         <div class="history-content" data-aos="fade-up" data-aos-delay="200">
           <div class="history-text">
-            <p>
+            <p class="animate-fade-in-left animate-stagger-1">
               Наш факультет был основан в 1950 году и с тех пор является ведущим 
               образовательным учреждением в области высшего образования. За более 
               чем 70 лет работы мы подготовили тысячи высококвалифицированных специалистов.
             </p>
-            <p>
+            <p class="animate-fade-in-left animate-stagger-2">
               Сегодня факультет продолжает развиваться, внедряя современные технологии 
               и методы обучения, поддерживая высокие стандарты качества образования.
             </p>
           </div>
           <div class="history-stats">
-            <div class="stat-item" data-aos="zoom-in" data-aos-delay="300">
-              <div class="stat-number">70+</div>
+            <div class="stat-item hover-glow animate-zoom-in animate-stagger-1" data-aos="zoom-in" data-aos-delay="300">
+              <div class="stat-number animate-pulse">70+</div>
               <div class="stat-label">Лет опыта</div>
             </div>
-            <div class="stat-item" data-aos="zoom-in" data-aos-delay="400">
-              <div class="stat-number">5000+</div>
+            <div class="stat-item hover-glow animate-zoom-in animate-stagger-2" data-aos="zoom-in" data-aos-delay="400">
+              <div class="stat-number animate-pulse">5000+</div>
               <div class="stat-label">Выпускников</div>
             </div>
-            <div class="stat-item" data-aos="zoom-in" data-aos-delay="500">
-              <div class="stat-number">50+</div>
+            <div class="stat-item hover-glow animate-zoom-in animate-stagger-3" data-aos="zoom-in" data-aos-delay="500">
+              <div class="stat-number animate-pulse">50+</div>
               <div class="stat-label">Преподавателей</div>
             </div>
           </div>
@@ -65,19 +67,20 @@
       </div>
     </section>
 
-    <!-- Latest Recordings Section -->
-    <section class="latest-recordings">
+        <!-- Latest Recordings Section -->
+    <section class="latest-recordings bg-animated-gradient">
       <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Последние записи</h2>
-        <div v-if="loading" class="loading">
-          <div class="spinner"></div>
-          <p>Загрузка записей...</p>
+        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">Последние записи</h2>
+        <div v-if="loading" class="loading animate-bounce-in">
+          <div class="loading-spinner"></div>
+          <p class="loading-dots">Загрузка записей</p>
         </div>
         <div v-else-if="latestRecordings.length > 0" class="recordings-grid">
           <div 
             v-for="(recording, index) in latestRecordings" 
             :key="recording.id"
-            class="recording-card"
+            class="recording-card hover-lift animate-fade-in-up"
+            :class="`animate-stagger-${index + 1}`"
             data-aos="fade-up"
             :data-aos-delay="index * 100"
             @click="viewRecording(recording.id)"
@@ -88,19 +91,24 @@
                 :alt="recording.title"
                 @error="handleImageError"
                 loading="lazy"
+                class="animate-scale-in"
               >
-              <div class="image-overlay">
-                <i class="fas fa-eye"></i>
+              <div class="image-overlay animate-fade-in-up">
+                <i class="fas fa-eye animate-pulse"></i>
               </div>
             </div>
+            <div v-else class="recording-placeholder animate-shimmer">
+              <i class="fas fa-image animate-rotate-in"></i>
+              <span>Нет изображения</span>
+            </div>
             <div class="recording-content">
-              <div class="recording-category" v-if="recording.category">
+              <div class="recording-category animate-slide-in-up" v-if="recording.category">
                 <i class="fas fa-tag"></i>
                 {{ recording.category.name }}
               </div>
-              <h3 class="recording-title">{{ recording.title }}</h3>
-              <p class="recording-excerpt">{{ truncateText(recording.content, 100) }}</p>
-              <div class="recording-meta">
+              <h3 class="recording-title animate-fade-in-left">{{ recording.title }}</h3>
+              <p class="recording-excerpt animate-fade-in-right">{{ truncateText(recording.content, 100) }}</p>
+              <div class="recording-meta animate-fade-in-up">
                 <span class="recording-date">
                   <i class="fas fa-calendar"></i>
                   {{ formatDate(recording.created_at) }}
@@ -113,12 +121,12 @@
             </div>
           </div>
         </div>
-        <div v-else class="no-recordings">
-          <i class="fas fa-video"></i>
+        <div v-else class="no-recordings animate-bounce-in">
+          <i class="fas fa-video animate-float"></i>
           <p>Пока нет записей</p>
         </div>
-        <div class="section-footer" data-aos="fade-up">
-          <router-link to="/recordings" class="btn btn-primary">
+        <div class="section-footer animate-slide-in-up" data-aos="fade-up">
+          <router-link to="/recordings" class="btn btn-primary hover-glow animate-pulse">
             <i class="fas fa-arrow-right"></i>
             Посмотреть все записи
           </router-link>
@@ -127,37 +135,37 @@
     </section>
 
     <!-- Features Section -->
-    <section class="features">
+    <section class="features bg-space-gradient">
       <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Возможности портала</h2>
+        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">Возможности портала</h2>
         <div class="features-grid">
-          <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="feature-icon">
+          <div class="feature-card hover-lift animate-flip-in animate-stagger-1" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-icon animate-rotate-in">
               <i class="fas fa-video"></i>
             </div>
-            <h3>Мультимедийные записи</h3>
-            <p>Поддержка текста, изображений и видео в одной записи</p>
+            <h3 class="animate-fade-in-up">Мультимедийные записи</h3>
+            <p class="animate-fade-in-up animate-stagger-2">Поддержка текста, изображений и видео в одной записи</p>
           </div>
-          <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="feature-icon">
+          <div class="feature-card hover-lift animate-flip-in animate-stagger-2" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-icon animate-rotate-in animate-stagger-2">
               <i class="fas fa-tags"></i>
             </div>
-            <h3>Система категорий</h3>
-            <p>Удобная организация контента по категориям и тегам</p>
+            <h3 class="animate-fade-in-up animate-stagger-2">Система категорий</h3>
+            <p class="animate-fade-in-up animate-stagger-3">Удобная организация контента по категориям и тегам</p>
           </div>
-          <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-            <div class="feature-icon">
+          <div class="feature-card hover-lift animate-flip-in animate-stagger-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-icon animate-rotate-in animate-stagger-3">
               <i class="fas fa-users"></i>
             </div>
-            <h3>Управление пользователями</h3>
-            <p>Система ролей для администраторов и модераторов</p>
+            <h3 class="animate-fade-in-up animate-stagger-3">Управление пользователями</h3>
+            <p class="animate-fade-in-up animate-stagger-4">Система ролей для администраторов и модераторов</p>
           </div>
-          <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-            <div class="feature-icon">
+          <div class="feature-card hover-lift animate-flip-in animate-stagger-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="feature-icon animate-rotate-in animate-stagger-4">
               <i class="fas fa-mobile-alt"></i>
             </div>
-            <h3>Адаптивный дизайн</h3>
-            <p>Отлично работает на всех устройствах</p>
+            <h3 class="animate-fade-in-up animate-stagger-4">Адаптивный дизайн</h3>
+            <p class="animate-fade-in-up animate-stagger-5">Отлично работает на всех устройствах</p>
           </div>
         </div>
       </div>
@@ -177,15 +185,36 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isAuthenticated', 'getFileUrl'])
+    ...mapGetters(['isAuthenticated'])
   },
   async created() {
     await this.fetchLatestRecordings()
   },
   async mounted() {
     await this.fetchLatestRecordings()
+    this.initializeAnimations()
   },
   methods: {
+    initializeAnimations() {
+      // Add intersection observer for custom animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in-view')
+          }
+        })
+      }, observerOptions)
+
+      // Observe all animatable elements
+      document.querySelectorAll('.recording-card, .feature-card, .stat-item').forEach(el => {
+        observer.observe(el)
+      })
+    },
     async fetchLatestRecordings() {
       this.loading = true
       try {
@@ -206,9 +235,14 @@ export default {
     },
     handleImageError(event) {
       console.error('Image failed to load:', event.target.src)
-      // You can set a default image here
-      // event.target.src = '/path/to/default-image.jpg'
-      event.target.style.display = 'none'
+      const imageContainer = event.target.closest('.recording-image')
+      if (imageContainer) {
+        imageContainer.style.display = 'none'
+        const placeholder = imageContainer.nextElementSibling
+        if (placeholder && placeholder.classList.contains('recording-placeholder')) {
+          placeholder.style.display = 'flex'
+        }
+      }
     },
     viewRecording(id) {
       this.$router.push(`/recordings/${id}`)
@@ -230,6 +264,11 @@ export default {
 </script>
 
 <style scoped>
+.home {
+  min-height: 100vh;
+  position: relative;
+}
+
 .hero {
   position: relative;
   min-height: 100vh;
@@ -248,10 +287,12 @@ export default {
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradientShift 3s ease infinite;
 }
 
 .hero-subtitle {
@@ -287,9 +328,8 @@ export default {
 
 .shape {
   position: absolute;
-  background: rgba(255, 215, 0, 0.1);
   border-radius: 50%;
-  animation: float 6s ease-in-out infinite;
+  opacity: 0.6;
 }
 
 .shape-1 {
@@ -297,7 +337,7 @@ export default {
   height: 100px;
   top: 20%;
   left: 10%;
-  animation-delay: 0s;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
 }
 
 .shape-2 {
@@ -305,7 +345,7 @@ export default {
   height: 150px;
   top: 60%;
   right: 10%;
-  animation-delay: 2s;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
 }
 
 .shape-3 {
@@ -313,12 +353,25 @@ export default {
   height: 80px;
   bottom: 20%;
   left: 20%;
-  animation-delay: 4s;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.1));
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+.shape-4 {
+  width: 120px;
+  height: 120px;
+  top: 30%;
+  right: 30%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+.shape-5 {
+  width: 60px;
+  height: 60px;
+  bottom: 40%;
+  right: 20%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.5), rgba(255, 215, 0, 0.2));
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
 .section-title {
@@ -327,10 +380,12 @@ export default {
   margin-bottom: 3rem;
   color: #ffd700;
   font-weight: 700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
 .faculty-history {
   padding: 5rem 0;
+  position: relative;
 }
 
 .history-content {
@@ -356,10 +411,11 @@ export default {
 .stat-item {
   text-align: center;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
 .stat-number {
@@ -367,6 +423,7 @@ export default {
   font-weight: 700;
   color: #ffd700;
   margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 .stat-label {
@@ -376,6 +433,18 @@ export default {
 
 .latest-recordings {
   padding: 5rem 0;
+  position: relative;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.loading p {
+  margin-top: 1rem;
+  font-size: 1.1rem;
 }
 
 .recordings-grid {
@@ -386,18 +455,19 @@ export default {
 }
 
 .recording-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(15px);
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .recording-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .recording-image {
@@ -417,13 +487,32 @@ export default {
   transform: scale(1.1);
 }
 
+.recording-placeholder {
+  height: 200px;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  gap: 0.5rem;
+}
+
+.recording-placeholder i {
+  font-size: 2rem;
+}
+
+.recording-placeholder span {
+  font-size: 0.9rem;
+}
+
 .image-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -465,6 +554,7 @@ export default {
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .recording-excerpt {
@@ -509,6 +599,7 @@ export default {
 
 .features {
   padding: 5rem 0;
+  position: relative;
 }
 
 .features-grid {
@@ -520,16 +611,33 @@ export default {
 .feature-card {
   text-align: center;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(15px);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+  left: 100%;
 }
 
 .feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .feature-icon {
@@ -542,15 +650,17 @@ export default {
   justify-content: center;
   margin: 0 auto 1.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.1);
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
 }
 
 .feature-icon i {
   font-size: 2rem;
-  color: #1e3c72;
+  color: #1a1a2e;
 }
 
 .feature-card h3 {
@@ -558,11 +668,17 @@ export default {
   font-weight: 600;
   margin-bottom: 1rem;
   color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .feature-card p {
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.6;
+}
+
+/* Custom animation classes for intersection observer */
+.animate-in-view {
+  animation: slideInFromBottom 0.8s ease-out forwards;
 }
 
 @media (max-width: 768px) {
