@@ -1,0 +1,218 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="text-warning mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            Dashboard
+        </h1>
+        <p class="text-light mb-0">Welcome back, {{ session.admin_username }}!</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x text-warning mb-3"></i>
+                <div class="stats-number">{{ stats.total_users }}</div>
+                <h6 class="card-title">Total Users</h6>
+                <small class="text-muted">+{{ stats.new_users_month }} this month</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-video fa-2x text-warning mb-3"></i>
+                <div class="stats-number">{{ stats.total_recordings }}</div>
+                <h6 class="card-title">Total Recordings</h6>
+                <small class="text-muted">+{{ stats.new_recordings_month }} this month</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar fa-2x text-warning mb-3"></i>
+                <div class="stats-number">{{ stats.new_users_month }}</div>
+                <h6 class="card-title">New Users</h6>
+                <small class="text-muted">Last 30 days</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-plus fa-2x text-warning mb-3"></i>
+                <div class="stats-number">{{ stats.new_recordings_month }}</div>
+                <h6 class="card-title">New Recordings</h6>
+                <small class="text-muted">Last 30 days</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Users -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Recent Users
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_users %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recent_users %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-user me-2"></i>
+                                        {{ user.username }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'warning' if user.role == 'moderator' else 'secondary' }}">
+                                            {{ user.role.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>{{ moment(user.created_at).format('MMM DD, YYYY') if moment else user.created_at[:10] }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-warning btn-sm">
+                            View All Users
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>No users found</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Recordings -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-video me-2"></i>
+                    Recent Recordings
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_recordings %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for recording in recent_recordings %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-video me-2"></i>
+                                        <span title="{{ recording.title }}">
+                                            {{ recording.title[:30] + '...' if recording.title|length > 30 else recording.title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>{{ recording.author or 'Unknown' }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ moment(recording.created_at).format('MMM DD, YYYY') if moment else recording.created_at[:10] }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('admin_recordings') }}" class="btn btn-outline-warning btn-sm">
+                            View All Recordings
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-video fa-3x mb-3"></i>
+                        <p>No recordings found</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-warning w-100 py-3">
+                            <i class="fas fa-users fa-2x d-block mb-2"></i>
+                            Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('admin_recordings') }}" class="btn btn-outline-warning w-100 py-3">
+                            <i class="fas fa-video fa-2x d-block mb-2"></i>
+                            Manage Recordings
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-outline-warning w-100 py-3" onclick="refreshStats()">
+                            <i class="fas fa-sync-alt fa-2x d-block mb-2"></i>
+                            Refresh Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function refreshStats() {
+    location.reload();
+}
+</script>
+{% endblock %}
