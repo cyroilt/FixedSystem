@@ -27,9 +27,9 @@
               Назад к записям
             </router-link>
           </div>
-          
+
           <h1 class="recording-title animate-glow">{{ recording.title }}</h1>
-          
+
           <div class="recording-meta animate-fade-in-up animate-stagger-2">
             <div class="meta-item">
               <i class="fas fa-calendar animate-pulse"></i>
@@ -50,8 +50,14 @@
           </div>
 
           <!-- Action Buttons -->
-          <div v-if="canEditRecording" class="action-buttons animate-fade-in-up animate-stagger-3">
-            <button @click="editRecording" class="btn btn-secondary hover-scale">
+          <div
+            v-if="canEditRecording"
+            class="action-buttons animate-fade-in-up animate-stagger-3"
+          >
+            <button
+              @click="editRecording"
+              class="btn btn-secondary hover-scale"
+            >
               <i class="fas fa-edit"></i>
               Редактировать
             </button>
@@ -65,18 +71,24 @@
         <!-- Media Content -->
         <div class="media-section">
           <!-- Image -->
-          <div v-if="recording.image_path" class="image-container animate-scale-in">
-            <img 
-              :src="getImageUrl(recording.image_path)" 
+          <div
+            v-if="recording.image_path"
+            class="image-container animate-scale-in"
+          >
+            <img
+              :src="getImageUrl(recording.image_path)"
               :alt="recording.title"
               @error="handleImageError"
               class="recording-image hover-scale"
-            >
+            />
           </div>
 
           <!-- Video -->
-          <div v-if="recording.video_path" class="video-container animate-scale-in animate-stagger-2">
-            <video 
+          <div
+            v-if="recording.video_path"
+            class="video-container animate-scale-in animate-stagger-2"
+          >
+            <video
               :src="getVideoUrl(recording.video_path)"
               controls
               preload="metadata"
@@ -90,11 +102,17 @@
 
         <!-- Content -->
         <div class="content-section animate-fade-in-up animate-stagger-3">
-          <div class="content-text" v-html="formatContent(recording.content)"></div>
+          <div
+            class="content-text"
+            v-html="formatContent(recording.content)"
+          ></div>
         </div>
 
         <!-- Tags -->
-        <div v-if="recording.tags && recording.tags.length > 0" class="tags-section animate-slide-in-up animate-stagger-4">
+        <div
+          v-if="recording.tags && recording.tags.length > 0"
+          class="tags-section animate-slide-in-up animate-stagger-4"
+        >
           <h3>Теги</h3>
           <div class="tags-list">
             <span
@@ -109,7 +127,10 @@
         </div>
 
         <!-- Related Recordings -->
-        <div v-if="relatedRecordings.length > 0" class="related-section animate-fade-in-up animate-stagger-5">
+        <div
+          v-if="relatedRecordings.length > 0"
+          class="related-section animate-fade-in-up animate-stagger-5"
+        >
           <h3>Похожие записи</h3>
           <div class="related-grid">
             <div
@@ -120,7 +141,10 @@
               @click="viewRecording(related.id)"
             >
               <div class="related-image" v-if="related.image_path">
-                <img :src="getImageUrl(related.image_path)" :alt="related.title">
+                <img
+                  :src="getImageUrl(related.image_path)"
+                  :alt="related.title"
+                />
               </div>
               <div v-else class="related-placeholder">
                 <i class="fas fa-image"></i>
@@ -128,7 +152,9 @@
               <div class="related-content">
                 <h4>{{ related.title }}</h4>
                 <p>{{ truncateText(related.content, 80) }}</p>
-                <span class="related-date">{{ formatDate(related.created_at) }}</span>
+                <span class="related-date">{{
+                  formatDate(related.created_at)
+                }}</span>
               </div>
             </div>
           </div>
@@ -137,11 +163,18 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay animate-fade-in-up" @click="showDeleteModal = false">
+    <div
+      v-if="showDeleteModal"
+      class="modal-overlay animate-fade-in-up"
+      @click="showDeleteModal = false"
+    >
       <div class="modal animate-zoom-in" @click.stop>
         <div class="modal-header">
           <h3 class="animate-glow">Подтверждение удаления</h3>
-          <button @click="showDeleteModal = false" class="modal-close hover-scale">
+          <button
+            @click="showDeleteModal = false"
+            class="modal-close hover-scale"
+          >
             <i class="fas fa-times animate-rotate-in"></i>
           </button>
         </div>
@@ -150,7 +183,10 @@
           <p class="warning">Это действие нельзя отменить.</p>
         </div>
         <div class="modal-footer">
-          <button @click="showDeleteModal = false" class="btn btn-secondary hover-scale">
+          <button
+            @click="showDeleteModal = false"
+            class="btn btn-secondary hover-scale"
+          >
             Отмена
           </button>
           <button @click="confirmDelete" class="btn btn-danger hover-glow">
@@ -183,7 +219,8 @@ export default {
     canEditRecording() {
       if (!this.isAuthenticated || !this.recording) return false
       if (this.isAdmin) return true
-      if (this.isModerator && this.recording.user_id === this.user.id) return true
+      if (this.isModerator && this.recording.user_id === this.user.id)
+        return true
       return false
     }
   },
@@ -195,12 +232,13 @@ export default {
     async fetchRecording() {
       this.loading = true
       this.error = null
-      
+
       try {
         const id = this.$route.params.id
         this.recording = await this.$store.dispatch('fetchRecording', id)
       } catch (error) {
-        this.error = error.response?.data?.message || 'Не удалось загрузить запись'
+        this.error =
+          error.response?.data?.message || 'Не удалось загрузить запись'
         console.error('Error fetching recording:', error)
       } finally {
         this.loading = false
@@ -209,10 +247,13 @@ export default {
     async fetchRelatedRecordings() {
       try {
         const id = this.$route.params.id
-        this.relatedRecordings = await this.$store.dispatch('fetchRelatedRecordings', {
-          recordingId: id,
-          limit: 3
-        })
+        this.relatedRecordings = await this.$store.dispatch(
+          'fetchRelatedRecordings',
+          {
+            recordingId: id,
+            limit: 3
+          }
+        )
       } catch (error) {
         console.error('Error fetching related recordings:', error)
       }
@@ -615,27 +656,26 @@ export default {
   .recording-title {
     font-size: 2rem;
   }
-  
+
   .recording-meta {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .related-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .modal {
     margin: 1rem;
   }
-  
+
   .modal-footer {
     flex-direction: column;
   }
 }
 </style>
-

@@ -10,8 +10,12 @@
           </div>
           <div class="icon-particles">
             <div class="particle particle-1 animate-float"></div>
-            <div class="particle particle-2 animate-float animate-stagger-2"></div>
-            <div class="particle particle-3 animate-float animate-stagger-4"></div>
+            <div
+              class="particle particle-2 animate-float animate-stagger-2"
+            ></div>
+            <div
+              class="particle particle-3 animate-float animate-stagger-4"
+            ></div>
           </div>
         </div>
 
@@ -19,8 +23,8 @@
         <div class="error-message animate-fade-in-up animate-stagger-2">
           <h1 class="error-title animate-glow">Доступ запрещен</h1>
           <p class="error-description animate-fade-in-up animate-stagger-3">
-            У вас недостаточно прав для доступа к этой странице. 
-            Обратитесь к администратору для получения необходимых разрешений.
+            У вас недостаточно прав для доступа к этой странице. Обратитесь к
+            администратору для получения необходимых разрешений.
           </p>
         </div>
 
@@ -34,7 +38,9 @@
           <div class="detail-card hover-lift animate-stagger-1">
             <i class="fas fa-key"></i>
             <h3>Проверьте права доступа</h3>
-            <p>Убедитесь, что ваша учетная запись имеет необходимые разрешения</p>
+            <p>
+              Убедитесь, что ваша учетная запись имеет необходимые разрешения
+            </p>
           </div>
         </div>
 
@@ -48,7 +54,11 @@
             <i class="fas fa-home"></i>
             На главную
           </router-link>
-          <router-link v-if="!isAuthenticated" to="/login" class="btn btn-outline hover-scale">
+          <router-link
+            v-if="!isAuthenticated"
+            to="/login"
+            class="btn btn-outline hover-scale"
+          >
             <i class="fas fa-sign-in-alt"></i>
             Войти
           </router-link>
@@ -61,7 +71,10 @@
               <i class="fas fa-question-circle"></i>
               Нужна помощь?
             </h4>
-            <p>Если вы считаете, что это ошибка, свяжитесь с нашей службой поддержки</p>
+            <p>
+              Если вы считаете, что это ошибка, свяжитесь с нашей службой
+              поддержки
+            </p>
             <div class="help-actions">
               <a href="mailto:support@faculty.edu" class="help-link hover-glow">
                 <i class="fas fa-envelope"></i>
@@ -113,7 +126,7 @@ export default {
       }
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-in-view')
           }
@@ -121,7 +134,7 @@ export default {
       }, observerOptions)
 
       // Observe error elements
-      document.querySelectorAll('.detail-card, .help-card').forEach(el => {
+      document.querySelectorAll('.detail-card, .help-card').forEach((el) => {
         observer.observe(el)
       })
     }
@@ -257,7 +270,12 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 107, 107, 0.1),
+    transparent
+  );
   transition: left 0.6s ease;
 }
 
@@ -401,7 +419,8 @@ export default {
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -410,7 +429,8 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -419,7 +439,8 @@ export default {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
   }
   50% {
@@ -476,12 +497,24 @@ export default {
   animation: float 4s ease-in-out infinite;
 }
 
-.animate-stagger-1 { animation-delay: 0.1s; }
-.animate-stagger-2 { animation-delay: 0.2s; }
-.animate-stagger-3 { animation-delay: 0.3s; }
-.animate-stagger-4 { animation-delay: 0.4s; }
-.animate-stagger-5 { animation-delay: 0.5s; }
-.animate-stagger-6 { animation-delay: 0.6s; }
+.animate-stagger-1 {
+  animation-delay: 0.1s;
+}
+.animate-stagger-2 {
+  animation-delay: 0.2s;
+}
+.animate-stagger-3 {
+  animation-delay: 0.3s;
+}
+.animate-stagger-4 {
+  animation-delay: 0.4s;
+}
+.animate-stagger-5 {
+  animation-delay: 0.5s;
+}
+.animate-stagger-6 {
+  animation-delay: 0.6s;
+}
 
 .hover-lift:hover {
   transform: translateY(-3px);
@@ -500,29 +533,29 @@ export default {
   .error-title {
     font-size: 2.5rem;
   }
-  
+
   .error-number {
     font-size: 6rem;
   }
-  
+
   .error-icon i {
     font-size: 4rem;
   }
-  
+
   .error-description {
     font-size: 1.1rem;
   }
-  
+
   .error-details {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .error-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .help-actions {
     flex-direction: column;
   }
@@ -532,15 +565,15 @@ export default {
   .error-page {
     padding: 1rem 0;
   }
-  
+
   .error-title {
     font-size: 2rem;
   }
-  
+
   .error-number {
     font-size: 4rem;
   }
-  
+
   .detail-card,
   .help-card {
     padding: 1.5rem;

@@ -10,9 +10,15 @@
           </div>
           <div class="icon-particles">
             <div class="particle particle-1 animate-float"></div>
-            <div class="particle particle-2 animate-float animate-stagger-2"></div>
-            <div class="particle particle-3 animate-float animate-stagger-4"></div>
-            <div class="particle particle-4 animate-float animate-stagger-6"></div>
+            <div
+              class="particle particle-2 animate-float animate-stagger-2"
+            ></div>
+            <div
+              class="particle particle-3 animate-float animate-stagger-4"
+            ></div>
+            <div
+              class="particle particle-4 animate-float animate-stagger-6"
+            ></div>
           </div>
         </div>
 
@@ -20,8 +26,9 @@
         <div class="error-message animate-fade-in-up animate-stagger-2">
           <h1 class="error-title animate-glow">Страница не найдена</h1>
           <p class="error-description animate-fade-in-up animate-stagger-3">
-            К сожалению, запрашиваемая страница не существует или была перемещена. 
-            Проверьте правильность введенного адреса или воспользуйтесь навигацией.
+            К сожалению, запрашиваемая страница не существует или была
+            перемещена. Проверьте правильность введенного адреса или
+            воспользуйтесь навигацией.
           </p>
         </div>
 
@@ -39,8 +46,12 @@
                   type="text"
                   placeholder="Введите поисковый запрос..."
                   class="search-input"
+                />
+                <button
+                  type="submit"
+                  class="search-btn hover-lift"
+                  :disabled="!searchQuery.trim()"
                 >
-                <button type="submit" class="search-btn hover-lift" :disabled="!searchQuery.trim()">
                   <i class="fas fa-search"></i>
                 </button>
               </div>
@@ -73,7 +84,11 @@
                 <p>Просмотр всех записей факультета</p>
               </div>
             </router-link>
-            <router-link v-if="!isAuthenticated" to="/login" class="page-card hover-lift">
+            <router-link
+              v-if="!isAuthenticated"
+              to="/login"
+              class="page-card hover-lift"
+            >
               <div class="page-icon">
                 <i class="fas fa-sign-in-alt"></i>
               </div>
@@ -82,7 +97,11 @@
                 <p>Авторизация пользователей</p>
               </div>
             </router-link>
-            <router-link v-if="!isAuthenticated" to="/register" class="page-card hover-lift">
+            <router-link
+              v-if="!isAuthenticated"
+              to="/register"
+              class="page-card hover-lift"
+            >
               <div class="page-icon">
                 <i class="fas fa-user-plus"></i>
               </div>
@@ -185,16 +204,18 @@ export default {
       }
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-in-view')
           }
         })
       }, observerOptions)
 
-      document.querySelectorAll('.page-card, .search-card, .help-card').forEach(el => {
-        observer.observe(el)
-      })
+      document
+        .querySelectorAll('.page-card, .search-card, .help-card')
+        .forEach((el) => {
+          observer.observe(el)
+        })
     }
   }
 }
@@ -393,7 +414,7 @@ export default {
   font-weight: 600;
   margin-bottom: 2rem;
   display: flex;
-    align-items: center;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
 }
@@ -427,7 +448,12 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.1),
+    transparent
+  );
   transition: left 0.6s ease;
 }
 
@@ -601,7 +627,8 @@ export default {
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -610,7 +637,8 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -619,7 +647,8 @@ export default {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
   }
   50% {
@@ -676,13 +705,27 @@ export default {
   animation: float 4s ease-in-out infinite;
 }
 
-.animate-stagger-1 { animation-delay: 0.1s; }
-.animate-stagger-2 { animation-delay: 0.2s; }
-.animate-stagger-3 { animation-delay: 0.3s; }
-.animate-stagger-4 { animation-delay: 0.4s; }
-.animate-stagger-5 { animation-delay: 0.5s; }
-.animate-stagger-6 { animation-delay: 0.6s; }
-.animate-stagger-7 { animation-delay: 0.7s; }
+.animate-stagger-1 {
+  animation-delay: 0.1s;
+}
+.animate-stagger-2 {
+  animation-delay: 0.2s;
+}
+.animate-stagger-3 {
+  animation-delay: 0.3s;
+}
+.animate-stagger-4 {
+  animation-delay: 0.4s;
+}
+.animate-stagger-5 {
+  animation-delay: 0.5s;
+}
+.animate-stagger-6 {
+  animation-delay: 0.6s;
+}
+.animate-stagger-7 {
+  animation-delay: 0.7s;
+}
 
 .hover-lift:hover {
   transform: translateY(-3px);
@@ -701,43 +744,43 @@ export default {
   .error-title {
     font-size: 2.5rem;
   }
-  
+
   .error-number {
     font-size: 6rem;
   }
-  
+
   .error-icon i {
     font-size: 4rem;
   }
-  
+
   .error-description {
     font-size: 1.1rem;
   }
-  
+
   .pages-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .page-card {
     flex-direction: column;
     text-align: center;
     gap: 1rem;
   }
-  
+
   .page-info {
     text-align: center;
   }
-  
+
   .error-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .help-actions {
     flex-direction: column;
   }
-  
+
   .search-input-group {
     flex-direction: column;
   }
@@ -747,20 +790,20 @@ export default {
   .error-page {
     padding: 1rem 0;
   }
-  
+
   .error-title {
     font-size: 2rem;
   }
-  
+
   .error-number {
     font-size: 4rem;
   }
-  
+
   .search-card,
   .help-card {
     padding: 1.5rem;
   }
-  
+
   .page-card {
     padding: 1.25rem;
   }

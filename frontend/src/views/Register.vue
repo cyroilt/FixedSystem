@@ -7,15 +7,15 @@
             <h1>Регистрация</h1>
             <p>Создайте аккаунт для доступа к порталу</p>
           </div>
-          
+
           <div v-if="error" class="error">
             {{ error }}
           </div>
-          
+
           <div v-if="success" class="success">
             Регистрация успешна! Теперь вы можете войти в систему.
           </div>
-          
+
           <form @submit.prevent="handleRegister" class="register-form">
             <div class="form-group">
               <label for="username" class="form-label">
@@ -30,9 +30,9 @@
                 placeholder="Введите имя пользователя"
                 required
                 minlength="3"
-              >
+              />
             </div>
-            
+
             <div class="form-group">
               <label for="email" class="form-label">
                 <i class="fas fa-envelope"></i>
@@ -45,9 +45,9 @@
                 class="form-input"
                 placeholder="Введите email"
                 required
-              >
+              />
             </div>
-            
+
             <div class="form-group">
               <label for="password" class="form-label">
                 <i class="fas fa-lock"></i>
@@ -62,23 +62,28 @@
                   placeholder="Введите пароль"
                   required
                   minlength="6"
-                >
+                />
                 <button
                   type="button"
                   class="password-toggle"
                   @click="showPassword = !showPassword"
                 >
-                  <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i
+                    :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                  ></i>
                 </button>
               </div>
               <div class="password-strength">
                 <div class="strength-bar" :class="passwordStrength.class">
-                  <div class="strength-fill" :style="{ width: passwordStrength.width }"></div>
+                  <div
+                    class="strength-fill"
+                    :style="{ width: passwordStrength.width }"
+                  ></div>
                 </div>
                 <span class="strength-text">{{ passwordStrength.text }}</span>
               </div>
             </div>
-            
+
             <div class="form-group">
               <label for="confirmPassword" class="form-label">
                 <i class="fas fa-lock"></i>
@@ -91,25 +96,30 @@
                 class="form-input"
                 placeholder="Подтвердите пароль"
                 required
+              />
+              <div
+                v-if="form.confirmPassword && !passwordsMatch"
+                class="field-error"
               >
-              <div v-if="form.confirmPassword && !passwordsMatch" class="field-error">
                 Пароли не совпадают
               </div>
             </div>
-            
+
             <button
               type="submit"
               class="btn btn-primary register-btn"
-              :disabled="loading || !isFormValid" @click="handleRegister()"
+              :disabled="loading || !isFormValid"
+              @click="handleRegister()"
             >
               <i v-if="loading" class="fas fa-spinner fa-spin"></i>
               <i v-else class="fas fa-user-plus"></i>
               {{ loading ? 'Регистрация...' : 'Зарегистрироваться' }}
             </button>
           </form>
-          
+
           <div class="register-footer">
-            <p>Уже есть аккаунт? 
+            <p>
+              Уже есть аккаунт?
               <router-link to="/login" class="link">Войти</router-link>
             </p>
           </div>
@@ -144,7 +154,7 @@ export default {
     passwordStrength() {
       const password = this.form.password
       if (!password) return { class: '', width: '0%', text: '' }
-      
+
       let score = 0
       if (password.length >= 6) score++
       if (password.length >= 8) score++
@@ -152,29 +162,31 @@ export default {
       if (/[a-z]/.test(password)) score++
       if (/[0-9]/.test(password)) score++
       if (/[^A-Za-z0-9]/.test(password)) score++
-      
+
       if (score < 2) return { class: 'weak', width: '25%', text: 'Слабый' }
       if (score < 4) return { class: 'medium', width: '50%', text: 'Средний' }
       if (score < 5) return { class: 'strong', width: '75%', text: 'Сильный' }
       return { class: 'very-strong', width: '100%', text: 'Очень сильный' }
     },
     isFormValid() {
-      return this.form.username.length >= 3 &&
-             this.form.email &&
-             this.form.password.length >= 6 &&
-             this.passwordsMatch
+      return (
+        this.form.username.length >= 3 &&
+        this.form.email &&
+        this.form.password.length >= 6 &&
+        this.passwordsMatch
+      )
     }
   },
   methods: {
     async handleRegister() {
       if (!this.isFormValid) return
-      console.log('Form data:', this.form);
+      console.log('Form data:', this.form)
       const result = await this.$store.dispatch('register', {
         username: this.form.username,
         email: this.form.email,
         password: this.form.password
       })
-      
+
       if (result.success) {
         this.success = true
         setTimeout(() => {
@@ -343,7 +355,7 @@ export default {
     padding: 2rem;
     margin: 1rem;
   }
-  
+
   .register-header h1 {
     font-size: 1.75rem;
   }

@@ -10,10 +10,18 @@
           </div>
           <div class="icon-particles">
             <div class="particle particle-1 animate-float"></div>
-            <div class="particle particle-2 animate-float animate-stagger-2"></div>
-            <div class="particle particle-3 animate-float animate-stagger-4"></div>
-            <div class="particle particle-4 animate-float animate-stagger-6"></div>
-            <div class="particle particle-5 animate-float animate-stagger-8"></div>
+            <div
+              class="particle particle-2 animate-float animate-stagger-2"
+            ></div>
+            <div
+              class="particle particle-3 animate-float animate-stagger-4"
+            ></div>
+            <div
+              class="particle particle-4 animate-float animate-stagger-6"
+            ></div>
+            <div
+              class="particle particle-5 animate-float animate-stagger-8"
+            ></div>
           </div>
         </div>
 
@@ -21,8 +29,9 @@
         <div class="error-message animate-fade-in-up animate-stagger-2">
           <h1 class="error-title animate-glow">Внутренняя ошибка сервера</h1>
           <p class="error-description animate-fade-in-up animate-stagger-3">
-            Произошла непредвиденная ошибка на сервере. Наша команда уже работает над устранением проблемы. 
-            Попробуйте обновить страницу или вернуться позже.
+            Произошла непредвиденная ошибка на сервере. Наша команда уже
+            работает над устранением проблемы. Попробуйте обновить страницу или
+            вернуться позже.
           </p>
         </div>
 
@@ -72,7 +81,10 @@
             <div class="status-footer">
               <small>Последнее обновление: {{ currentTime }}</small>
               <button @click="refreshStatus" class="refresh-btn hover-scale">
-                <i class="fas fa-sync-alt" :class="{ 'animate-spin': refreshing }"></i>
+                <i
+                  class="fas fa-sync-alt"
+                  :class="{ 'animate-spin': refreshing }"
+                ></i>
               </button>
             </div>
           </div>
@@ -80,7 +92,10 @@
 
         <!-- Action Buttons -->
         <div class="error-actions animate-fade-in-up animate-stagger-6">
-          <button @click="reloadPage" class="btn btn-primary hover-glow animate-pulse">
+          <button
+            @click="reloadPage"
+            class="btn btn-primary hover-glow animate-pulse"
+          >
             <i class="fas fa-redo"></i>
             Обновить страницу
           </button>
@@ -94,7 +109,7 @@
           </router-link>
         </div>
 
-                <!-- Help Section -->
+        <!-- Help Section -->
         <div class="help-section animate-fade-in-up animate-stagger-7">
           <div class="help-card">
             <h4>
@@ -149,7 +164,11 @@
         </div>
 
         <!-- Error Report Modal -->
-        <div v-if="showReportModal" class="modal-overlay" @click="showReportModal = false">
+        <div
+          v-if="showReportModal"
+          class="modal-overlay"
+          @click="showReportModal = false"
+        >
           <div class="modal" @click.stop>
             <div class="modal-header">
               <h3>Сообщить об ошибке</h3>
@@ -161,26 +180,45 @@
               <form @submit.prevent="submitErrorReport">
                 <div class="form-group">
                   <label>Ваш email (необязательно)</label>
-                  <input v-model="errorReport.email" type="email" class="form-input" placeholder="email@example.com">
+                  <input
+                    v-model="errorReport.email"
+                    type="email"
+                    class="form-input"
+                    placeholder="email@example.com"
+                  />
                 </div>
                 <div class="form-group">
                   <label>Описание проблемы</label>
-                  <textarea v-model="errorReport.description" class="form-textarea" rows="4" 
-                    placeholder="Опишите, что вы делали когда произошла ошибка..."></textarea>
+                  <textarea
+                    v-model="errorReport.description"
+                    class="form-textarea"
+                    rows="4"
+                    placeholder="Опишите, что вы делали когда произошла ошибка..."
+                  ></textarea>
                 </div>
                 <div class="form-group">
                   <label>
-                    <input v-model="errorReport.includeTechnicalInfo" type="checkbox">
+                    <input
+                      v-model="errorReport.includeTechnicalInfo"
+                      type="checkbox"
+                    />
                     Включить техническую информацию
                   </label>
                 </div>
               </form>
             </div>
             <div class="modal-footer">
-              <button @click="showReportModal = false" class="btn btn-secondary">
+              <button
+                @click="showReportModal = false"
+                class="btn btn-secondary"
+              >
                 Отмена
               </button>
-              <button @click="submitErrorReport" class="btn btn-primary" :disabled="!errorReport.description.trim()">
+              <button
+                @click="submitErrorReport"
+                class="btn btn-primary"
+                :disabled="!errorReport.description.trim()"
+              >
                 <i class="fas fa-paper-plane"></i>
                 Отправить
               </button>
@@ -233,7 +271,7 @@ export default {
     async refreshStatus() {
       this.refreshing = true
       // Simulate status check
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 2000))
       this.refreshing = false
     },
     goBack() {
@@ -253,10 +291,10 @@ export default {
       try {
         // Here you would send the error report to your backend
         console.log('Error report:', this.errorReport)
-        
+
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
         // Reset form and close modal
         this.errorReport = {
           email: '',
@@ -264,7 +302,7 @@ export default {
           includeTechnicalInfo: true
         }
         this.showReportModal = false
-        
+
         // Show success message (you could use a toast notification)
         alert('Спасибо! Ваше сообщение об ошибке отправлено.')
       } catch (error) {
@@ -279,16 +317,18 @@ export default {
       }
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-in-view')
           }
         })
       }, observerOptions)
 
-      document.querySelectorAll('.detail-card, .status-card, .help-card').forEach(el => {
-        observer.observe(el)
-      })
+      document
+        .querySelectorAll('.detail-card, .status-card, .help-card')
+        .forEach((el) => {
+          observer.observe(el)
+        })
     }
   }
 }
@@ -434,7 +474,12 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 149, 0, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 149, 0, 0.1),
+    transparent
+  );
   transition: left 0.6s ease;
 }
 
@@ -564,7 +609,7 @@ export default {
 
 .refresh-btn:hover {
   color: #ffd700;
-    background: rgba(255, 215, 0, 0.1);
+  background: rgba(255, 215, 0, 0.1);
 }
 
 .error-actions {
@@ -837,7 +882,7 @@ export default {
   color: rgba(255, 255, 255, 0.5);
 }
 
-.form-group label input[type="checkbox"] {
+.form-group label input[type='checkbox'] {
   width: auto;
   margin-right: 0.5rem;
 }
@@ -852,7 +897,8 @@ export default {
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -861,7 +907,8 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -870,7 +917,8 @@ export default {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow: 0 0 20px rgba(255, 149, 0, 0.3);
   }
   50% {
@@ -940,15 +988,33 @@ export default {
   animation: spin 1s linear infinite;
 }
 
-.animate-stagger-1 { animation-delay: 0.1s; }
-.animate-stagger-2 { animation-delay: 0.2s; }
-.animate-stagger-3 { animation-delay: 0.3s; }
-.animate-stagger-4 { animation-delay: 0.4s; }
-.animate-stagger-5 { animation-delay: 0.5s; }
-.animate-stagger-6 { animation-delay: 0.6s; }
-.animate-stagger-7 { animation-delay: 0.7s; }
-.animate-stagger-8 { animation-delay: 0.8s; }
-.animate-stagger-9 { animation-delay: 0.9s; }
+.animate-stagger-1 {
+  animation-delay: 0.1s;
+}
+.animate-stagger-2 {
+  animation-delay: 0.2s;
+}
+.animate-stagger-3 {
+  animation-delay: 0.3s;
+}
+.animate-stagger-4 {
+  animation-delay: 0.4s;
+}
+.animate-stagger-5 {
+  animation-delay: 0.5s;
+}
+.animate-stagger-6 {
+  animation-delay: 0.6s;
+}
+.animate-stagger-7 {
+  animation-delay: 0.7s;
+}
+.animate-stagger-8 {
+  animation-delay: 0.8s;
+}
+.animate-stagger-9 {
+  animation-delay: 0.9s;
+}
 
 .hover-lift:hover {
   transform: translateY(-3px);
@@ -967,44 +1033,44 @@ export default {
   .error-title {
     font-size: 2.5rem;
   }
-  
+
   .error-number {
     font-size: 6rem;
   }
-  
+
   .error-icon i {
     font-size: 4rem;
   }
-  
+
   .error-description {
     font-size: 1.1rem;
   }
-  
+
   .error-details {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .help-steps {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .error-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .help-actions {
     flex-direction: column;
   }
-  
+
   .status-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .status-footer {
     flex-direction: column;
     gap: 1rem;
@@ -1016,29 +1082,29 @@ export default {
   .error-page {
     padding: 1rem 0;
   }
-  
+
   .error-title {
     font-size: 2rem;
   }
-  
+
   .error-number {
     font-size: 4rem;
   }
-  
+
   .detail-card,
   .status-card,
   .help-card {
     padding: 1.5rem;
   }
-  
+
   .help-step {
     padding: 0.75rem;
   }
-  
+
   .modal {
     margin: 1rem;
   }
-  
+
   .modal-footer {
     flex-direction: column;
   }
@@ -1054,7 +1120,7 @@ export default {
   .animate-spin {
     animation: none;
   }
-  
+
   .hover-lift:hover,
   .hover-scale:hover {
     transform: none;
@@ -1066,7 +1132,7 @@ export default {
   .error-page {
     background: #000000;
   }
-  
+
   .detail-card,
   .status-card,
   .help-card,
@@ -1074,12 +1140,12 @@ export default {
     background: #1a1a1a;
     border-color: #ffffff;
   }
-  
+
   .error-title,
   .error-number {
     color: #ffff00;
   }
-  
+
   .help-link,
   .form-input,
   .form-textarea {
@@ -1088,4 +1154,3 @@ export default {
   }
 }
 </style>
-

@@ -1,19 +1,23 @@
 <template>
   <div class="avatar-placeholder" :class="[size, variant]" :style="avatarStyle">
-    <img 
-      v-if="src && !imageError" 
-      :src="src" 
+    <img
+      v-if="src && !imageError"
+      :src="src"
       :alt="alt"
       @error="handleImageError"
       @load="handleImageLoad"
       class="avatar-image"
-    >
+    />
     <div v-else class="avatar-fallback">
       <i v-if="icon" :class="icon" class="avatar-icon"></i>
       <span v-else-if="initials" class="avatar-initials">{{ initials }}</span>
       <i v-else class="fas fa-user avatar-icon"></i>
     </div>
-    <div v-if="showStatus && status" class="avatar-status" :class="status"></div>
+    <div
+      v-if="showStatus && status"
+      class="avatar-status"
+      :class="status"
+    ></div>
   </div>
 </template>
 
@@ -32,12 +36,12 @@ export default {
     size: {
       type: String,
       default: 'medium',
-      validator: value => ['small', 'medium', 'large', 'xl'].includes(value)
+      validator: (value) => ['small', 'medium', 'large', 'xl'].includes(value)
     },
     variant: {
       type: String,
       default: 'circle',
-      validator: value => ['circle', 'rounded', 'square'].includes(value)
+      validator: (value) => ['circle', 'rounded', 'square'].includes(value)
     },
     name: {
       type: String,
@@ -62,7 +66,8 @@ export default {
     status: {
       type: String,
       default: 'offline',
-      validator: value => ['online', 'offline', 'away', 'busy'].includes(value)
+      validator: (value) =>
+        ['online', 'offline', 'away', 'busy'].includes(value)
     }
   },
   data() {
@@ -76,7 +81,7 @@ export default {
       if (!this.name) return ''
       return this.name
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase())
+        .map((word) => word.charAt(0).toUpperCase())
         .slice(0, 2)
         .join('')
     },
@@ -108,19 +113,31 @@ export default {
     },
     generateColorFromName(name) {
       if (!name) return '#6b7280'
-      
+
       const colors = [
-        '#ef4444', '#f97316', '#f59e0b', '#eab308',
-        '#84cc16', '#22c55e', '#10b981', '#14b8a6',
-        '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
-        '#8b5cf6', '#a855f7', '#d946ef', '#ec4899'
+        '#ef4444',
+        '#f97316',
+        '#f59e0b',
+        '#eab308',
+        '#84cc16',
+        '#22c55e',
+        '#10b981',
+        '#14b8a6',
+        '#06b6d4',
+        '#0ea5e9',
+        '#3b82f6',
+        '#6366f1',
+        '#8b5cf6',
+        '#a855f7',
+        '#d946ef',
+        '#ec4899'
       ]
-      
+
       let hash = 0
       for (let i = 0; i < name.length; i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash)
       }
-      
+
       return colors[Math.abs(hash) % colors.length]
     }
   },

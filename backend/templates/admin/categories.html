@@ -1,0 +1,313 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Категории{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="fas fa-folder me-3"></i>Управление категориями</h2>
+            <p>Создание и управление категориями записей</p>
+        </div>
+        <button class="btn btn-primary" onclick="showCreateModal()">
+            <i class="fas fa-plus"></i>
+            Создать категорию
+        </button>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+    <!-- Categories List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-list me-2"></i>Список категорий</h3>
+                <div class="badge badge-info">
+                    <i class="fas fa-folder"></i>
+                    {{ categories|length }} категорий
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if categories %}
+                <div class="categories-grid">
+                    {% for category in categories %}
+                        <div class="category-item">
+                            <div class="category-content">
+                                <div class="category-header">
+                                    <div class="category-icon">
+                                        <i class="fas fa-folder"></i>
+                                    </div>
+                                    <div class="category-info">
+                                        <h4 class="category-name">{{ category.name }}</h4>
+                                        <div class="category-stats">
+                                            <span class="badge badge-primary">
+                                                <i class="fas fa-video"></i>
+                                                {{ category.usage_count }} записей
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-sm btn-secondary" onclick="editCategory({{ category.id }}, '{{ category.name }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        {% if category.usage_count == 0 %}
+                                            <form method="POST" action="{{ url_for('admin_delete_category', category_id=category.id) }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirmDelete('Вы уверены, что хотите удалить категорию &quot;{{ category.name }}&quot;?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-danger" disabled title="Нельзя удалить категорию с записями">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-folder fa-4x"></i>
+                    <h3>Категории не найдены</h3>
+                    <p>Создайте первую категорию для организации записей</p>
+                    <button class="btn btn-primary" onclick="showCreateModal()">
+                        <i class="fas fa-plus"></i>
+                        Создать первую категорию
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Create Category Modal -->
+<div id="createCategoryModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-plus-circle"></i>
+                Создать новую категорию
+            </h3>
+            <button type="button" class="modal-close" onclick="closeCreateModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ url_for('admin_create_category') }}" id="createCategoryForm">
+            <div class="form-group">
+                <label for="name" class="form-label">Название категории</label>
+                <input type="text" id="name" name="name" class="form-control" 
+                       placeholder="Введите название категории" required>
+            </div>
+            <div class="d-flex gap-3 justify-content-end">
+                <button type="button" onclick="closeCreateModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Создать категорию
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div id="editCategoryModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-edit"></i>
+                Редактировать категорию
+            </h3>
+            <button type="button" class="modal-close" onclick="closeEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editCategoryForm" method="POST">
+            <div class="form-group">
+                <label for="edit_name" class="form-label">Название категории</label>
+                <input type="text" id="edit_name" name="name" class="form-control" required>
+            </div>
+            <div class="d-flex gap-3 justify-content-end">
+                <button type="button" onclick="closeEditModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Сохранить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-item {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.category-item:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.category-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.category-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.category-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0 0 0.5rem 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.category-stats {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.category-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+}
+
+.empty-state i {
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h3 {
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-header {
+        flex-wrap: wrap;
+    }
+    
+    .category-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+}
+</style>
+
+<script>
+function showCreateModal() {
+    document.getElementById('createCategoryModal').style.display = 'flex';
+    document.getElementById('name').focus();
+}
+
+function closeCreateModal() {
+    document.getElementById('createCategoryModal').style.display = 'none';
+    document.getElementById('createCategoryForm').reset();
+}
+
+function editCategory(categoryId, categoryName) {
+    const modal = document.getElementById('editCategoryModal');
+    const form = document.getElementById('editCategoryForm');
+    const nameInput = document.getElementById('edit_name');
+    
+    form.action = `/admin/categories/${categoryId}/edit`;
+    nameInput.value = categoryName;
+    modal.style.display = 'flex';
+    nameInput.focus();
+}
+
+function closeEditModal() {
+    document.getElementById('editCategoryModal').style.display = 'none';
+}
+
+// Close modals when clicking outside
+document.getElementById('createCategoryModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCreateModal();
+    }
+});
+
+document.getElementById('editCategoryModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEditModal();
+    }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCreateModal();
+        closeEditModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Редактировать запись{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Редактировать запись: {{ recording.title }}</h2>
+    <p>Изменение данных записи</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div class="card">
+        <div class="card-header">
+            <h3>Основная информация</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Название:</label>
+                    <input type="text" id="title" name="title" class="form-control" 
+                           value="{{ recording.title }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Содержание:</label>
+                    <textarea id="content" name="content" class="form-control" rows="8">{{ recording.content or '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id">Категория:</label>
+                    <select id="category_id" name="category_id" class="form-control">
+                        <option value="">Без категории</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if recording.category_id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tag_ids">Теги:</label>
+                    <div style="max-height: 150px; overflow-y: auto; border: 1px solid #ced4da; padding: 0.5rem; border-radius: 0.375rem;">
+                        {% for tag in tags %}
+                            <label style="display: block; margin-bottom: 0.25rem;">
+                                <input type="checkbox" name="tag_ids" value="{{ tag.id }}"
+                                       {% for recording_tag in recording_tags %}
+                                           {% if recording_tag.id == tag.id %}checked{% endif %}
+                                       {% endfor %}>
+                                {{ tag.name }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Изображение:</label>
+                    <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                    {% if recording.image_path %}
+                        <small class="text-muted">Текущее изображение: {{ recording.image_path.split('/')[-1] }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="video">Видео:</label>
+                    <input type="file" id="video" name="video" class="form-control" accept="video/*">
+                    {% if recording.video_path %}
+                        <small class="text-muted">Текущее видео: {{ recording.video_path.split('/')[-1] }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    <a href="{{ url_for('admin_recordings') }}" class="btn btn-secondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Информация о записи</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; gap: 0.5rem;">
+                    <div><strong>ID:</strong> {{ recording.id }}</div>
+                    <div><strong>Автор:</strong> {{ recording.author_username or 'Неизвестно' }}</div>
+                    <div><strong>Дата создания:</strong> {{ recording.created_at[:10] if recording.created_at else 'Неизвестно' }}</div>
+                    <div><strong>Дата обновления:</strong> {{ recording.updated_at[:10] if recording.updated_at else 'Неизвестно' }}</div>
+                    <div><strong>Просмотры:</strong> {{ recording.views }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if recording.image_path %}
+        <div class="card">
+            <div class="card-header">
+                <h3>Текущее изображение</h3>
+            </div>
+            <div class="card-body">
+                <img src="{{ recording.image_path }}" style="max-width: 100%; height: auto;" alt="Recording image">
+            </div>
+        </div>
+        {% endif %}
+
+        {% if recording.video_path %}
+        <div class="card">
+            <div class="card-header">
+                <h3>Текущее видео</h3>
+            </div>
+            <div class="card-body">
+                <video controls style="max-width: 100%; height: auto;">
+                    <source src="{{ recording.video_path }}" type="video/mp4">
+                    Ваш браузер не поддерживает видео.
+                </video>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Опасная зона</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Удаление записи необратимо. Все связанные файлы будут удалены.</p>
+                <form method="POST" action="{{ url_for('delete_recording_admin', recording_id=recording.id) }}">
+                    <button type="submit" class="btn btn-danger" 
+                            onclick="return confirm('Вы уверены, что хотите удалить запись {{ recording.title }}? Это действие необратимо!')">
+                        Удалить запись
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-muted {
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    div[style*="grid-template-columns: 2fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+{% endblock %}

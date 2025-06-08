@@ -2,11 +2,24 @@
   <div class="create-recording">
     <div class="container">
       <div class="form-header" data-aos="fade-up">
-        <h1>{{ isEditing ? 'Редактировать запись' : 'Создать новую запись' }}</h1>
-        <p>{{ isEditing ? 'Внесите изменения в запись' : 'Добавьте новую запись в портал' }}</p>
+        <h1>
+          {{ isEditing ? 'Редактировать запись' : 'Создать новую запись' }}
+        </h1>
+        <p>
+          {{
+            isEditing
+              ? 'Внесите изменения в запись'
+              : 'Добавьте новую запись в портал'
+          }}
+        </p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="recording-form" data-aos="fade-up" data-aos-delay="100">
+      <form
+        @submit.prevent="handleSubmit"
+        class="recording-form"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
         <div class="form-card">
           <!-- Title -->
           <div class="form-group">
@@ -22,7 +35,7 @@
               placeholder="Введите заголовок записи"
               required
               maxlength="255"
-            >
+            />
             <div class="char-count">{{ form.title.length }}/255</div>
           </div>
 
@@ -32,9 +45,17 @@
               <i class="fas fa-tag"></i>
               Категория
             </label>
-            <select id="category" v-model="form.category_id" class="form-select">
+            <select
+              id="category"
+              v-model="form.category_id"
+              class="form-select"
+            >
               <option value="">Выберите категорию</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.name }}
               </option>
             </select>
@@ -47,20 +68,45 @@
               Содержание
             </label>
             <div class="editor-toolbar">
-              <button type="button" @click="formatText('bold')" class="toolbar-btn" title="Жирный">
+              <button
+                type="button"
+                @click="formatText('bold')"
+                class="toolbar-btn"
+                title="Жирный"
+              >
                 <i class="fas fa-bold"></i>
               </button>
-              <button type="button" @click="formatText('italic')" class="toolbar-btn" title="Курсив">
+              <button
+                type="button"
+                @click="formatText('italic')"
+                class="toolbar-btn"
+                title="Курсив"
+              >
                 <i class="fas fa-italic"></i>
               </button>
-              <button type="button" @click="formatText('underline')" class="toolbar-btn" title="Подчеркнутый">
+              <button
+                type="button"
+                @click="formatText('underline')"
+                class="toolbar-btn"
+                title="Подчеркнутый"
+              >
                 <i class="fas fa-underline"></i>
               </button>
               <div class="toolbar-divider"></div>
-              <button type="button" @click="insertList('ul')" class="toolbar-btn" title="Маркированный список">
+              <button
+                type="button"
+                @click="insertList('ul')"
+                class="toolbar-btn"
+                title="Маркированный список"
+              >
                 <i class="fas fa-list-ul"></i>
               </button>
-              <button type="button" @click="insertList('ol')" class="toolbar-btn" title="Нумерованный список">
+              <button
+                type="button"
+                @click="insertList('ol')"
+                class="toolbar-btn"
+                title="Нумерованный список"
+              >
                 <i class="fas fa-list-ol"></i>
               </button>
             </div>
@@ -82,29 +128,48 @@
               <i class="fas fa-image"></i>
               Изображение
             </label>
-            <div class="file-upload-area" @drop="handleImageDrop" @dragover.prevent @dragenter.prevent>
+            <div
+              class="file-upload-area"
+              @drop="handleImageDrop"
+              @dragover.prevent
+              @dragenter.prevent
+            >
               <input
                 ref="imageInput"
                 type="file"
                 accept="image/*"
                 @change="handleImageSelect"
                 class="file-input"
+              />
+
+              <div
+                v-if="!imagePreview"
+                class="upload-placeholder"
+                @click="$refs.imageInput.click()"
               >
-              
-              <div v-if="!imagePreview" class="upload-placeholder" @click="$refs.imageInput.click()">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <p>Перетащите изображение сюда или нажмите для выбора</p>
-                <span class="upload-hint">Поддерживаются форматы: JPG, PNG, GIF (макс. 5MB)</span>
+                <span class="upload-hint"
+                  >Поддерживаются форматы: JPG, PNG, GIF (макс. 5MB)</span
+                >
               </div>
-              
+
               <div v-else class="image-preview">
-                <img :src="imagePreview" alt="Preview">
+                <img :src="imagePreview" alt="Preview" />
                 <div class="image-actions">
-                  <button type="button" @click="removeImage" class="btn btn-danger btn-sm">
+                  <button
+                    type="button"
+                    @click="removeImage"
+                    class="btn btn-danger btn-sm"
+                  >
                     <i class="fas fa-trash"></i>
                     Удалить
                   </button>
-                  <button type="button" @click="$refs.imageInput.click()" class="btn btn-secondary btn-sm">
+                  <button
+                    type="button"
+                    @click="$refs.imageInput.click()"
+                    class="btn btn-secondary btn-sm"
+                  >
                     <i class="fas fa-edit"></i>
                     Заменить
                   </button>
@@ -119,29 +184,48 @@
               <i class="fas fa-video"></i>
               Видео
             </label>
-            <div class="file-upload-area" @drop="handleVideoDrop" @dragover.prevent @dragenter.prevent>
+            <div
+              class="file-upload-area"
+              @drop="handleVideoDrop"
+              @dragover.prevent
+              @dragenter.prevent
+            >
               <input
                 ref="videoInput"
                 type="file"
                 accept="video/*"
                 @change="handleVideoSelect"
                 class="file-input"
+              />
+
+              <div
+                v-if="!videoPreview"
+                class="upload-placeholder"
+                @click="$refs.videoInput.click()"
               >
-              
-              <div v-if="!videoPreview" class="upload-placeholder" @click="$refs.videoInput.click()">
                 <i class="fas fa-video"></i>
                 <p>Перетащите видео сюда или нажмите для выбора</p>
-                <span class="upload-hint">Поддерживаются форматы: MP4, AVI, MOV (макс. 50MB)</span>
+                <span class="upload-hint"
+                  >Поддерживаются форматы: MP4, AVI, MOV (макс. 50MB)</span
+                >
               </div>
-              
+
               <div v-else class="video-preview">
                 <video :src="videoPreview" controls preload="metadata"></video>
                 <div class="video-actions">
-                  <button type="button" @click="removeVideo" class="btn btn-danger btn-sm">
+                  <button
+                    type="button"
+                    @click="removeVideo"
+                    class="btn btn-danger btn-sm"
+                  >
                     <i class="fas fa-trash"></i>
                     Удалить
                   </button>
-                  <button type="button" @click="$refs.videoInput.click()" class="btn btn-secondary btn-sm">
+                  <button
+                    type="button"
+                    @click="$refs.videoInput.click()"
+                    class="btn btn-secondary btn-sm"
+                  >
                     <i class="fas fa-edit"></i>
                     Заменить
                   </button>
@@ -164,9 +248,13 @@
                   class="selected-tag"
                 >
                   {{ tag.name }}
-                  <button type="button" @click="removeTag(tag)" class="tag-remove">
+                  <button
+                    type="button"
+                    @click="removeTag(tag)"
+                    class="tag-remove"
+                  >
                     <i class="fas fa-times"></i>
-                                      </button>
+                  </button>
                 </span>
               </div>
               <input
@@ -176,7 +264,7 @@
                 placeholder="Введите тег и нажмите Enter"
                 @keydown.enter.prevent="addTag"
                 @keydown.comma.prevent="addTag"
-              >
+              />
             </div>
             <div class="tags-suggestions" v-if="suggestedTags.length > 0">
               <span
@@ -196,11 +284,20 @@
               <i class="fas fa-arrow-left"></i>
               Отмена
             </router-link>
-            <button type="button" @click="saveDraft" class="btn btn-outline" :disabled="loading">
+            <button
+              type="button"
+              @click="saveDraft"
+              class="btn btn-outline"
+              :disabled="loading"
+            >
               <i class="fas fa-save"></i>
               Сохранить черновик
             </button>
-            <button type="submit" class="btn btn-primary" :disabled="loading || !isFormValid">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              :disabled="loading || !isFormValid"
+            >
               <i class="fas fa-spinner fa-spin" v-if="loading"></i>
               <i class="fas fa-check" v-else></i>
               {{ isEditing ? 'Обновить' : 'Опубликовать' }}
@@ -276,12 +373,15 @@ export default {
     },
     async loadRecording() {
       try {
-        const recording = await this.$store.dispatch('fetchRecording', this.recordingId)
+        const recording = await this.$store.dispatch(
+          'fetchRecording',
+          this.recordingId
+        )
         this.form.title = recording.title
         this.form.content = recording.content
         this.form.category_id = recording.category_id
         this.selectedTags = recording.tags || []
-        
+
         if (recording.image_path) {
           this.imagePreview = recording.image_path
         }
@@ -359,16 +459,16 @@ export default {
       const tagName = this.tagInput.trim()
       if (!tagName) return
 
-      const existingTag = this.selectedTags.find(tag => 
-        tag.name.toLowerCase() === tagName.toLowerCase()
+      const existingTag = this.selectedTags.find(
+        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
       )
       if (existingTag) {
         this.tagInput = ''
         return
       }
 
-      const suggestedTag = this.suggestedTags.find(tag => 
-        tag.name.toLowerCase() === tagName.toLowerCase()
+      const suggestedTag = this.suggestedTags.find(
+        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
       )
 
       if (suggestedTag) {
@@ -384,13 +484,17 @@ export default {
       this.tagInput = ''
     },
     selectSuggestedTag(tag) {
-      const exists = this.selectedTags.find(selected => selected.id === tag.id)
+      const exists = this.selectedTags.find(
+        (selected) => selected.id === tag.id
+      )
       if (!exists) {
         this.selectedTags.push(tag)
       }
     },
     removeTag(tagToRemove) {
-      this.selectedTags = this.selectedTags.filter(tag => tag.id !== tagToRemove.id)
+      this.selectedTags = this.selectedTags.filter(
+        (tag) => tag.id !== tagToRemove.id
+      )
     },
     formatText(command) {
       const textarea = this.$refs.contentEditor
@@ -411,25 +515,37 @@ export default {
           break
       }
 
-      const newContent = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end)
+      const newContent =
+        textarea.value.substring(0, start) +
+        formattedText +
+        textarea.value.substring(end)
       this.form.content = newContent
 
       this.$nextTick(() => {
         textarea.focus()
-        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length)
+        textarea.setSelectionRange(
+          start + formattedText.length,
+          start + formattedText.length
+        )
       })
     },
     insertList(type) {
       const textarea = this.$refs.contentEditor
       const start = textarea.selectionStart
       const listItem = type === 'ul' ? '- ' : '1. '
-      
-      const newContent = textarea.value.substring(0, start) + listItem + textarea.value.substring(start)
+
+      const newContent =
+        textarea.value.substring(0, start) +
+        listItem +
+        textarea.value.substring(start)
       this.form.content = newContent
 
       this.$nextTick(() => {
         textarea.focus()
-        textarea.setSelectionRange(start + listItem.length, start + listItem.length)
+        textarea.setSelectionRange(
+          start + listItem.length,
+          start + listItem.length
+        )
       })
     },
     async saveDraft() {
@@ -443,15 +559,15 @@ export default {
         const formData = new FormData()
         formData.append('title', this.form.title)
         formData.append('content', this.form.content)
-        
+
         if (this.form.category_id) {
           formData.append('category_id', this.form.category_id)
         }
-        
+
         if (this.form.image) {
           formData.append('image', this.form.image)
         }
-        
+
         if (this.form.video) {
           formData.append('video', this.form.video)
         }
@@ -477,7 +593,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 .create-recording {
@@ -799,24 +914,24 @@ export default {
   .form-card {
     padding: 2rem 1.5rem;
   }
-  
+
   .form-header h1 {
     font-size: 2rem;
   }
-  
+
   .editor-toolbar {
     flex-wrap: wrap;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .tags-input-container {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .tag-input {
     min-width: auto;
   }

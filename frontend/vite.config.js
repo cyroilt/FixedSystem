@@ -9,7 +9,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:5000', // Change to 5000 if using default Flask port
         changeOrigin: true,
-        secure: false,
+        secure: false
       }
     }
   }

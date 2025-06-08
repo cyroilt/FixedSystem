@@ -9,6 +9,9 @@ import Recordings from '../views/Recordings.vue'
 import RecordingDetail from '../views/RecordingDetail.vue'
 import RecordingForm from '../components/RecordingForm.vue'
 import Profile from '../views/Profile.vue'
+import WallPrint from '../views/WallPrint.vue'
+import Command from '../views/Command.vue'
+import MemoryPages from '../views/MemoryPages.vue'
 const routes = [
   {
     path: '/',
@@ -19,15 +22,18 @@ const routes = [
     }
   },
   {
-    path:'/admin',
+    path: '/admin',
     name: 'Admin',
-    component: Profile,
+    beforeEnter() {
+      // Redirect to backend admin panel
+      window.location.href = 'http://localhost:5000/admin'
+    },
     meta: {
       title: 'Админка - Faculty Portal',
       requiresAuth: true,
+      requiresAdmin: true
     }
   },
-
   {
     path: '/login',
     name: 'Login',
@@ -55,6 +61,11 @@ const routes = [
     }
   },
   {
+    path: '/memory-pages',
+    name: 'MemoryPages',
+    component: MemoryPages
+  },
+  {
     path: '/recordings/new',
     name: 'CreateRecording',
     component: RecordingForm,
@@ -77,7 +88,7 @@ const routes = [
     path: '/recordings/:id/edit',
     name: 'EditRecording',
     component: RecordingForm,
-    props: route => ({ recordingId: route.params.id }),
+    props: (route) => ({ recordingId: route.params.id }),
     meta: {
       title: 'Редактировать запись - Faculty Portal',
       requiresAuth: true,
@@ -85,43 +96,47 @@ const routes = [
     }
   },
   {
-    path: '/profile',
+    path: '/wall-print',
+    name: 'WallPrint',
+    component: WallPrint,
+    meta: {
+      title: 'Стенная печать - Faculty Portal'
+    }
+  },
+  {
+    path: '/command',
+    name: 'Command',
+    component: Command,
+    meta: {
+      title: 'Командование - Faculty Portal'
+    }
+  },
+  {
+    path: '/profile/:userId?',
     name: 'Profile',
-    component: () => import('../views/Profile.vue'),
+    component: Profile,
+    props: (route) => ({ userId: route.params.userId }),
     meta: {
-      title: 'Профиль - Faculty Portal',
-      requiresAuth: true
-    }
-  },
-  // Error pages
-  {
-    path: '/404',
-    name: 'NotFound',
-    component: () => import('../views/errors/404.vue'),
-    meta: {
-      title: 'Страница не найдена - Faculty Portal'
+      title: 'Профиль - Faculty Portal'
     }
   },
   {
-    path: '/403',
-    name: 'Forbidden',
-    component: () => import('../views/errors/403.vue'),
+    path: '/users/:userId',
+    name: 'UserProfile',
+    component: Profile,
+    props: (route) => ({ userId: route.params.userId }),
     meta: {
-      title: 'Доступ запрещен - Faculty Portal'
+      title: 'Профиль пользователя - Faculty Portal'
     }
   },
+  // Add this route to your existing routes array
   {
-    path: '/500',
-    name: 'ServerError',
-    component: () => import('../views/errors/500.vue'),
+    path: '/faculty-history',
+    name: 'FacultyHistory',
+    component: () => import('@/views/FacultyHistory.vue'),
     meta: {
-      title: 'Ошибка сервера - Faculty Portal'
+      title: 'История Факультета'
     }
-  },
-  // Catch all route - must be last
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/404'
   }
 ]
 
@@ -131,81 +146,49 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
-    } else if (to.hash) {
-      return {
-        el: to.hash,
-        behavior: 'smooth'
-      }
     } else {
-      return { top: 0, behavior: 'smooth' }
+      return { top: 0 }
     }
   }
 })
 
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
+  // Initialize store if not already done
+  if (!store.state.isAuthenticated && store.state.token) {
+    await store.dispatch('initializeApp')
+  }
+
   // Set page title
-  document.title = to.meta.title || 'Faculty Portal'
-  
-  // Check if user is authenticated
-  const isAuthenticated = store.getters.isAuthenticated
-  const isAdmin = store.getters.isAdmin
-  const isModerator = store.getters.isModerator
-  
-  // Handle guest-only routes
-  if (to.meta.requiresGuest && isAuthenticated) {
-    next('/')
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+
+  // Check authentication requirements
+  if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
+    next({ name: 'Login', query: { redirect: to.fullPath } })
     return
   }
-  
-  // Handle auth-required routes
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({
-      name: 'Login',
-      query: { redirect: to.fullPath }
-    })
+
+  // Check guest-only routes
+  if (to.meta.requiresGuest && store.getters.isAuthenticated) {
+    next({ name: 'Home' })
     return
   }
-  
-  // Handle admin-only routes
-  if (to.meta.requiresAdmin && !isAdmin) {
-    next('/403')
+
+  // Check admin requirements
+  if (to.meta.requiresAdmin && !store.getters.isAdmin) {
+    next({ name: 'Home' })
     return
   }
-  
-  // Handle moderator-only routes
-  if (to.meta.requiresModerator && !isModerator) {
-    next('/403')
+
+  // Check moderator requirements
+  if (to.meta.requiresModerator && !store.getters.isModerator) {
+    next({ name: 'Home' })
     return
   }
-  
-  // Add loading state
-  store.commit('SET_LOADING', true)
-  
+
   next()
-})
-
-router.afterEach((to, from) => {
-  // Remove loading state
-  store.commit('SET_LOADING', false)
-  
-  // Track page views (for analytics)
-  if (typeof gtag !== 'undefined') {
-    gtag('config', 'GA_MEASUREMENT_ID', {
-      page_title: to.meta.title,
-      page_location: window.location.href
-    })
-  }
-})
-
-// Handle navigation errors
-router.onError((error) => {
-  console.error('Router error:', error)
-  
-  if (error.name === 'ChunkLoadError') {
-    // Handle chunk loading errors (usually from code splitting)
-    window.location.reload()
-  }
 })
 
 export default router

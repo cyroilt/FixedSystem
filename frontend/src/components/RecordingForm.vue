@@ -2,11 +2,22 @@
   <div class="recording-form bg-darker-gradient particles-bg">
     <div class="container">
       <div class="form-header animate-fade-in-up">
-        <h1 class="animate-glow">{{ isEdit ? 'Редактировать запись' : 'Создать новую запись' }}</h1>
-        <p>{{ isEdit ? 'Внесите изменения в запись' : 'Заполните форму для создания новой записи' }}</p>
+        <h1 class="animate-glow">
+          {{ isEdit ? 'Редактировать запись' : 'Создать новую запись' }}
+        </h1>
+        <p>
+          {{
+            isEdit
+              ? 'Внесите изменения в запись'
+              : 'Заполните форму для создания новой записи'
+          }}
+        </p>
       </div>
 
-      <form @submit.prevent="submitForm" class="recording-form-content animate-fade-in-up animate-stagger-2">
+      <form
+        @submit.prevent="submitForm"
+        class="recording-form-content animate-fade-in-up animate-stagger-2"
+      >
         <!-- Title Field -->
         <div class="form-group animate-slide-in-up">
           <label for="title" class="form-label">
@@ -20,9 +31,13 @@
             class="form-input hover-glow"
             placeholder="Введите название записи"
             required
-            :class="{ 'error': errors.title }"
+            :class="{ error: errors.title }"
+          />
+          <span
+            v-if="errors.title"
+            class="error-message animate-fade-in-left"
+            >{{ errors.title }}</span
           >
-          <span v-if="errors.title" class="error-message animate-fade-in-left">{{ errors.title }}</span>
         </div>
 
         <!-- Content Field -->
@@ -37,9 +52,13 @@
             class="form-textarea hover-glow"
             placeholder="Введите содержание записи"
             rows="6"
-            :class="{ 'error': errors.content }"
+            :class="{ error: errors.content }"
           ></textarea>
-          <span v-if="errors.content" class="error-message animate-fade-in-left">{{ errors.content }}</span>
+          <span
+            v-if="errors.content"
+            class="error-message animate-fade-in-left"
+            >{{ errors.content }}</span
+          >
         </div>
 
         <!-- Category Field -->
@@ -52,14 +71,22 @@
             id="category"
             v-model="form.category_id"
             class="form-select hover-glow"
-            :class="{ 'error': errors.category_id }"
+            :class="{ error: errors.category_id }"
           >
             <option value="">Выберите категорию</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
+            <option
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id"
+            >
               {{ category.name }}
             </option>
           </select>
-          <span v-if="errors.category_id" class="error-message animate-fade-in-left">{{ errors.category_id }}</span>
+          <span
+            v-if="errors.category_id"
+            class="error-message animate-fade-in-left"
+            >{{ errors.category_id }}</span
+          >
         </div>
 
         <!-- Tags Field -->
@@ -76,7 +103,11 @@
                 class="selected-tag hover-scale animate-bounce-in"
               >
                 {{ tag.name }}
-                <button type="button" @click="removeTag(tag)" class="remove-tag">
+                <button
+                  type="button"
+                  @click="removeTag(tag)"
+                  class="remove-tag"
+                >
                   <i class="fas fa-times"></i>
                 </button>
               </span>
@@ -88,8 +119,11 @@
               placeholder="Введите тег и нажмите Enter"
               @keydown.enter.prevent="addTag"
               @input="filterTags"
+            />
+            <div
+              v-if="filteredTags.length > 0"
+              class="tag-suggestions animate-fade-in-up"
             >
-            <div v-if="filteredTags.length > 0" class="tag-suggestions animate-fade-in-up">
               <div
                 v-for="tag in filteredTags"
                 :key="tag.id"
@@ -116,19 +150,36 @@
               @change="handleImageUpload"
               class="file-input"
               id="image-upload"
-            >
+            />
             <label for="image-upload" class="file-upload-label hover-lift">
               <i class="fas fa-cloud-upload-alt"></i>
-              <span>{{ form.image ? 'Изменить изображение' : 'Выбрать изображение' }}</span>
+              <span>{{
+                form.image ? 'Изменить изображение' : 'Выбрать изображение'
+              }}</span>
             </label>
-            <div v-if="form.image || imagePreview" class="image-preview animate-scale-in">
-              <img :src="imagePreview || getImageUrl(form.image)" alt="Preview" class="preview-image">
-              <button type="button" @click="removeImage" class="remove-preview hover-scale">
+            <div
+              v-if="form.image || imagePreview"
+              class="image-preview animate-scale-in"
+            >
+              <img
+                :src="imagePreview || getImageUrl(form.image)"
+                alt="Preview"
+                class="preview-image"
+              />
+              <button
+                type="button"
+                @click="removeImage"
+                class="remove-preview hover-scale"
+              >
                 <i class="fas fa-times"></i>
               </button>
             </div>
           </div>
-          <span v-if="errors.image" class="error-message animate-fade-in-left">{{ errors.image }}</span>
+          <span
+            v-if="errors.image"
+            class="error-message animate-fade-in-left"
+            >{{ errors.image }}</span
+          >
         </div>
 
         <!-- Video Upload -->
@@ -145,19 +196,34 @@
               @change="handleVideoUpload"
               class="file-input"
               id="video-upload"
-            >
+            />
             <label for="video-upload" class="file-upload-label hover-lift">
               <i class="fas fa-video"></i>
               <span>{{ form.video ? 'Изменить видео' : 'Выбрать видео' }}</span>
             </label>
-            <div v-if="form.video || videoPreview" class="video-preview animate-scale-in">
-              <video :src="videoPreview || getVideoUrl(form.video)" controls class="preview-video"></video>
-              <button type="button" @click="removeVideo" class="remove-preview hover-scale">
+            <div
+              v-if="form.video || videoPreview"
+              class="video-preview animate-scale-in"
+            >
+              <video
+                :src="videoPreview || getVideoUrl(form.video)"
+                controls
+                class="preview-video"
+              ></video>
+              <button
+                type="button"
+                @click="removeVideo"
+                class="remove-preview hover-scale"
+              >
                 <i class="fas fa-times"></i>
               </button>
             </div>
           </div>
-          <span v-if="errors.video" class="error-message animate-fade-in-left">{{ errors.video }}</span>
+          <span
+            v-if="errors.video"
+            class="error-message animate-fade-in-left"
+            >{{ errors.video }}</span
+          >
         </div>
 
         <!-- Form Actions -->
@@ -179,7 +245,7 @@
           >
             <i class="fas fa-spinner animate-spin" v-if="loading"></i>
             <i class="fas fa-save" v-else></i>
-            {{ loading ? 'Сохранение...' : (isEdit ? 'Обновить' : 'Создать') }}
+            {{ loading ? 'Сохранение...' : isEdit ? 'Обновить' : 'Создать' }}
           </button>
         </div>
       </form>
@@ -229,7 +295,7 @@ export default {
   async created() {
     await this.fetchCategories()
     await this.fetchTags()
-    
+
     if (this.isEdit) {
       await this.loadRecording()
     }
@@ -252,8 +318,11 @@ export default {
     async loadRecording() {
       try {
         this.loading = true
-        const recording = await this.$store.dispatch('fetchRecording', this.recordingId)
-        
+        const recording = await this.$store.dispatch(
+          'fetchRecording',
+          this.recordingId
+        )
+
         this.form = {
           title: recording.title || '',
           content: recording.content || '',
@@ -261,7 +330,7 @@ export default {
           image: recording.image_path || null,
           video: recording.video_path || null
         }
-        
+
         this.selectedTags = recording.tags || []
       } catch (error) {
         console.error('Error loading recording:', error)
@@ -275,12 +344,15 @@ export default {
         this.filteredTags = []
         return
       }
-      
+
       const input = this.tagInput.toLowerCase()
-      this.filteredTags = this.tags.filter(tag => 
-                tag.name.toLowerCase().includes(input) &&
-        !this.selectedTags.some(selected => selected.id === tag.id)
-      ).slice(0, 5)
+      this.filteredTags = this.tags
+        .filter(
+          (tag) =>
+            tag.name.toLowerCase().includes(input) &&
+            !this.selectedTags.some((selected) => selected.id === tag.id)
+        )
+        .slice(0, 5)
     },
     selectTag(tag) {
       this.selectedTags.push(tag)
@@ -290,12 +362,12 @@ export default {
     addTag() {
       const tagName = this.tagInput.trim()
       if (!tagName) return
-      
+
       // Check if tag already exists
-      const existingTag = this.tags.find(tag => 
-        tag.name.toLowerCase() === tagName.toLowerCase()
+      const existingTag = this.tags.find(
+        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
       )
-      
+
       if (existingTag) {
         this.selectTag(existingTag)
       } else {
@@ -311,27 +383,29 @@ export default {
       }
     },
     removeTag(tagToRemove) {
-      this.selectedTags = this.selectedTags.filter(tag => tag.id !== tagToRemove.id)
+      this.selectedTags = this.selectedTags.filter(
+        (tag) => tag.id !== tagToRemove.id
+      )
     },
     handleImageUpload(event) {
       const file = event.target.files[0]
       if (!file) return
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         this.errors.image = 'Пожалуйста, выберите изображение'
         return
       }
-      
+
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         this.errors.image = 'Размер изображения не должен превышать 5MB'
         return
       }
-      
+
       this.form.image = file
       this.errors.image = null
-      
+
       // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -342,22 +416,22 @@ export default {
     handleVideoUpload(event) {
       const file = event.target.files[0]
       if (!file) return
-      
+
       // Validate file type
       if (!file.type.startsWith('video/')) {
         this.errors.video = 'Пожалуйста, выберите видео файл'
         return
       }
-      
+
       // Validate file size (50MB max)
       if (file.size > 50 * 1024 * 1024) {
         this.errors.video = 'Размер видео не должен превышать 50MB'
         return
       }
-      
+
       this.form.video = file
       this.errors.video = null
-      
+
       // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -393,39 +467,39 @@ export default {
     },
     validateForm() {
       this.errors = {}
-      
+
       if (!this.form.title.trim()) {
         this.errors.title = 'Название обязательно для заполнения'
       }
-      
+
       return Object.keys(this.errors).length === 0
     },
     async submitForm() {
       if (!this.validateForm()) return
-      
+
       this.loading = true
-      
+
       try {
         const formData = new FormData()
         formData.append('title', this.form.title.trim())
         formData.append('content', this.form.content.trim())
-        
+
         if (this.form.category_id) {
           formData.append('category_id', this.form.category_id)
         }
-        
+
         if (this.selectedTags.length > 0) {
           formData.append('tags', JSON.stringify(this.selectedTags))
         }
-        
+
         if (this.form.image instanceof File) {
           formData.append('image', this.form.image)
         }
-        
+
         if (this.form.video instanceof File) {
           formData.append('video', this.form.video)
         }
-        
+
         if (this.isEdit) {
           await this.$store.dispatch('updateRecording', {
             id: this.recordingId,
@@ -438,11 +512,12 @@ export default {
             return
           }
         }
-        
+
         this.$router.push('/recordings')
       } catch (error) {
         console.error('Error submitting form:', error)
-        this.errors.submit = error.response?.data?.message || 'Произошла ошибка при сохранении'
+        this.errors.submit =
+          error.response?.data?.message || 'Произошла ошибка при сохранении'
       } finally {
         this.loading = false
       }
@@ -731,19 +806,19 @@ export default {
     padding: 1.5rem;
     margin: 0 1rem;
   }
-  
+
   .form-header h1 {
     font-size: 2rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .selected-tags {
     gap: 0.25rem;
   }
-  
+
   .selected-tag {
     font-size: 0.8rem;
     padding: 0.4rem 0.6rem;
@@ -754,11 +829,11 @@ export default {
   .recording-form {
     padding: 1rem 0;
   }
-  
+
   .recording-form-content {
     padding: 1rem;
   }
-  
+
   .form-input,
   .form-textarea,
   .form-select,

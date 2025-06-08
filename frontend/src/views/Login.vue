@@ -7,11 +7,11 @@
             <h1>Вход в систему</h1>
             <p>Войдите в свой аккаунт для доступа к порталу</p>
           </div>
-          
+
           <div v-if="error" class="error">
             {{ error }}
           </div>
-          
+
           <form @submit.prevent="handleLogin" class="login-form">
             <div class="form-group">
               <label for="username" class="form-label">
@@ -25,9 +25,9 @@
                 class="form-input"
                 placeholder="Введите имя пользователя"
                 required
-              >
+              />
             </div>
-            
+
             <div class="form-group">
               <label for="password" class="form-label">
                 <i class="fas fa-lock"></i>
@@ -41,17 +41,19 @@
                   class="form-input"
                   placeholder="Введите пароль"
                   required
-                >
+                />
                 <button
                   type="button"
                   class="password-toggle"
                   @click="showPassword = !showPassword"
                 >
-                  <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i
+                    :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                  ></i>
                 </button>
               </div>
             </div>
-            
+
             <button
               type="submit"
               class="btn btn-primary login-btn"
@@ -62,10 +64,13 @@
               {{ loading ? 'Вход...' : 'Войти' }}
             </button>
           </form>
-          
+
           <div class="login-footer">
-            <p>Нет аккаунта? 
-              <router-link to="/register" class="link">Зарегистрироваться</router-link>
+            <p>
+              Нет аккаунта?
+              <router-link to="/register" class="link"
+                >Зарегистрироваться</router-link
+              >
             </p>
           </div>
         </div>
@@ -221,7 +226,7 @@ export default {
     padding: 2rem;
     margin: 1rem;
   }
-  
+
   .login-header h1 {
     font-size: 1.75rem;
   }

@@ -1,0 +1,279 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Теги{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="fas fa-tags me-3"></i>Управление тегами</h2>
+            <p>Создание и управление тегами записей</p>
+        </div>
+        <button class="btn btn-primary" onclick="showCreateModal()">
+            <i class="fas fa-plus"></i>
+            Создать тег
+        </button>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+    <!-- Tags List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-list me-2"></i>Список тегов</h3>
+                <div class="badge badge-info">
+                    <i class="fas fa-hashtag"></i>
+                    {{ tags|length }} тегов
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if tags %}
+                <div class="tags-grid">
+                    {% for tag in tags %}
+                        <div class="tag-item">
+                            <div class="tag-content">
+                                <div class="tag-header">
+                                    <h4 class="tag-name">
+                                        <i class="fas fa-hashtag"></i>
+                                        {{ tag.name }}
+                                    </h4>
+                                    <div class="tag-actions">
+                                        <button class="btn btn-sm btn-secondary" onclick="editTag({{ tag.id }}, '{{ tag.name }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form method="POST" action="{{ url_for('admin_delete_tag', tag_id=tag.id) }}" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirmDelete('Вы уверены, что хотите удалить тег &quot;{{ tag.name }}&quot;?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="tag-stats">
+                                    <span class="badge badge-primary">
+                                        <i class="fas fa-video"></i>
+                                        {{ tag.usage_count }} записей
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-tags fa-4x"></i>
+                    <h3>Теги не найдены</h3>
+                    <p>Создайте первый тег для организации записей</p>
+                    <button class="btn btn-primary" onclick="showCreateModal()">
+                        <i class="fas fa-plus"></i>
+                        Создать первый тег
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Create Tag Modal -->
+<div id="createTagModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-plus-circle"></i>
+                Создать новый тег
+            </h3>
+            <button type="button" class="modal-close" onclick="closeCreateModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" action="{{ url_for('admin_create_tag') }}" id="createTagForm">
+            <div class="form-group">
+                <label for="name" class="form-label">Название тега</label>
+                <input type="text" id="name" name="name" class="form-control" 
+                       placeholder="Введите название тега" required>
+            </div>
+            <div class="d-flex gap-3 justify-content-end">
+                <button type="button" onclick="closeCreateModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Создать тег
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Tag Modal -->
+<div id="editTagModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-edit"></i>
+                Редактировать тег
+            </h3>
+            <button type="button" class="modal-close" onclick="closeEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editTagForm" method="POST">
+            <div class="form-group">
+                <label for="edit_name" class="form-label">Название тега</label>
+                <input type="text" id="edit_name" name="name" class="form-control" required>
+            </div>
+            <div class="d-flex gap-3 justify-content-end">
+                <button type="button" onclick="closeEditModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Сохранить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.tag-item {
+    background: #f8fafc;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.tag-item:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.tag-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.tag-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tag-name i {
+    color: var(--primary-color);
+}
+
+.tag-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tag-stats {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+}
+.empty-state i {
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h3 {
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .tags-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tag-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .tag-actions {
+        align-self: flex-end;
+    }
+}
+</style>
+
+<script>
+function showCreateModal() {
+    document.getElementById('createTagModal').style.display = 'flex';
+    document.getElementById('name').focus();
+}
+
+function closeCreateModal() {
+    document.getElementById('createTagModal').style.display = 'none';
+    document.getElementById('createTagForm').reset();
+}
+
+function editTag(tagId, tagName) {
+    const modal = document.getElementById('editTagModal');
+    const form = document.getElementById('editTagForm');
+    const nameInput = document.getElementById('edit_name');
+    
+    form.action = `/admin/tags/${tagId}/edit`;
+    nameInput.value = tagName;
+    modal.style.display = 'flex';
+    nameInput.focus();
+}
+
+function closeEditModal() {
+    document.getElementById('editTagModal').style.display = 'none';
+}
+
+// Close modals when clicking outside
+document.getElementById('createTagModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCreateModal();
+    }
+});
+
+document.getElementById('editTagModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEditModal();
+    }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCreateModal();
+        closeEditModal();
+    }
+});
+</script>
+{% endblock %}

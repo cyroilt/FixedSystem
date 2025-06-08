@@ -8,14 +8,22 @@
             Добро пожаловать в Faculty Portal
           </h1>
           <p class="hero-subtitle animate-fade-in-up animate-stagger-2">
-            Современная система управления записями факультета с удобным интерфейсом
+            Современная система управления записями факультета с удобным
+            интерфейсом
           </p>
           <div class="hero-buttons animate-slide-in-up animate-stagger-3">
-            <router-link to="/recordings" class="btn btn-primary hover-lift animate-pulse">
+            <router-link
+              to="/recordings"
+              class="btn btn-primary hover-lift animate-pulse"
+            >
               <i class="fas fa-video"></i>
               Просмотреть записи
             </router-link>
-            <router-link v-if="!isAuthenticated" to="/register" class="btn btn-secondary hover-scale">
+            <router-link
+              v-if="!isAuthenticated"
+              to="/register"
+              class="btn btn-secondary hover-scale"
+            >
               <i class="fas fa-user-plus"></i>
               Присоединиться
             </router-link>
@@ -36,48 +44,83 @@
     <!-- Faculty History Section -->
     <section class="faculty-history bg-space-gradient">
       <div class="container">
-        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">История факультета</h2>
+        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">
+          История третьего факультета
+        </h2>
         <div class="history-content" data-aos="fade-up" data-aos-delay="200">
           <div class="history-text">
             <p class="animate-fade-in-left animate-stagger-1">
-              Наш факультет был основан в 1950 году и с тех пор является ведущим 
-              образовательным учреждением в области высшего образования. За более 
-              чем 70 лет работы мы подготовили тысячи высококвалифицированных специалистов.
+              История третьего факультета берет свое начало с 1992 года. До
+              этого времени были батальоны, но с преобразованием высшего
+              военного училища в военный институт правительственной связи,
+              вместо батальонов появились факультеты.
             </p>
             <p class="animate-fade-in-left animate-stagger-2">
-              Сегодня факультет продолжает развиваться, внедряя современные технологии 
-              и методы обучения, поддерживая высокие стандарты качества образования.
+              Первым начальником третьего факультета стал полковник Лукьянцев
+              Виктор Федорович, который являлся с 1988 по 1992 гг. командиром
+              первого батальона. На смену ему пришел полковник Иванов Владимир
+              Николаевич, при котором в 1998 году произвелся первый набор
+              курсантов из числа девушек по специальности «Автоматизированные
+              системы управления».
             </p>
+            <p class="animate-fade-in-left animate-stagger-3">
+              С 2014 года по настоящее время начальником третьего факультета
+              является полковник Беляков Эдуард Викторович, кандидат технических
+              наук, доцент.
+            </p>
+            <div class="history-action">
+              <router-link
+                to="/faculty-history"
+                class="btn btn-outline-primary hover-glow animate-pulse"
+              >
+                <i class="fas fa-book-open"></i>
+                Подробная история
+              </router-link>
+            </div>
           </div>
           <div class="history-stats">
-            <div class="stat-item hover-glow animate-zoom-in animate-stagger-1" data-aos="zoom-in" data-aos-delay="300">
-              <div class="stat-number animate-pulse">70+</div>
-              <div class="stat-label">Лет опыта</div>
+            <div
+              class="stat-item hover-glow animate-zoom-in animate-stagger-1"
+              data-aos="zoom-in"
+              data-aos-delay="300"
+            >
+              <div class="stat-number animate-pulse">30+</div>
+              <div class="stat-label">Лет истории</div>
             </div>
-            <div class="stat-item hover-glow animate-zoom-in animate-stagger-2" data-aos="zoom-in" data-aos-delay="400">
-              <div class="stat-number animate-pulse">5000+</div>
-              <div class="stat-label">Выпускников</div>
+            <div
+              class="stat-item hover-glow animate-zoom-in animate-stagger-2"
+              data-aos="zoom-in"
+              data-aos-delay="400"
+            >
+              <div class="stat-number animate-pulse">3</div>
+              <div class="stat-label">Кафедры</div>
             </div>
-            <div class="stat-item hover-glow animate-zoom-in animate-stagger-3" data-aos="zoom-in" data-aos-delay="500">
-              <div class="stat-number animate-pulse">50+</div>
-              <div class="stat-label">Преподавателей</div>
+            <div
+              class="stat-item hover-glow animate-zoom-in animate-stagger-3"
+              data-aos="zoom-in"
+              data-aos-delay="500"
+            >
+              <div class="stat-number animate-pulse">1998</div>
+              <div class="stat-label">Первый набор девушек</div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-        <!-- Latest Recordings Section -->
+    <!-- Latest Recordings Section -->
     <section class="latest-recordings bg-animated-gradient">
       <div class="container">
-        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">Последние записи</h2>
+        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">
+          Последние записи
+        </h2>
         <div v-if="loading" class="loading animate-bounce-in">
           <div class="loading-spinner"></div>
           <p class="loading-dots">Загрузка записей</p>
         </div>
         <div v-else-if="latestRecordings.length > 0" class="recordings-grid">
-          <div 
-            v-for="(recording, index) in latestRecordings" 
+          <div
+            v-for="(recording, index) in latestRecordings"
             :key="recording.id"
             class="recording-card hover-lift animate-fade-in-up"
             :class="`animate-stagger-${index + 1}`"
@@ -86,13 +129,13 @@
             @click="viewRecording(recording.id)"
           >
             <div class="recording-image" v-if="recording.image_path">
-              <img 
-                :src="getImageUrl(recording.image_path)" 
+              <img
+                :src="getImageUrl(recording.image_path)"
                 :alt="recording.title"
                 @error="handleImageError"
                 loading="lazy"
                 class="animate-scale-in"
-              >
+              />
               <div class="image-overlay animate-fade-in-up">
                 <i class="fas fa-eye animate-pulse"></i>
               </div>
@@ -102,12 +145,19 @@
               <span>Нет изображения</span>
             </div>
             <div class="recording-content">
-              <div class="recording-category animate-slide-in-up" v-if="recording.category">
+              <div
+                class="recording-category animate-slide-in-up"
+                v-if="recording.category"
+              >
                 <i class="fas fa-tag"></i>
                 {{ recording.category.name }}
               </div>
-              <h3 class="recording-title animate-fade-in-left">{{ recording.title }}</h3>
-              <p class="recording-excerpt animate-fade-in-right">{{ truncateText(recording.content, 100) }}</p>
+              <h3 class="recording-title animate-fade-in-left">
+                {{ recording.title }}
+              </h3>
+              <p class="recording-excerpt animate-fade-in-right">
+                {{ truncateText(recording.content, 100) }}
+              </p>
               <div class="recording-meta animate-fade-in-up">
                 <span class="recording-date">
                   <i class="fas fa-calendar"></i>
@@ -126,7 +176,10 @@
           <p>Пока нет записей</p>
         </div>
         <div class="section-footer animate-slide-in-up" data-aos="fade-up">
-          <router-link to="/recordings" class="btn btn-primary hover-glow animate-pulse">
+          <router-link
+            to="/recordings"
+            class="btn btn-primary hover-glow animate-pulse"
+          >
             <i class="fas fa-arrow-right"></i>
             Посмотреть все записи
           </router-link>
@@ -137,35 +190,67 @@
     <!-- Features Section -->
     <section class="features bg-space-gradient">
       <div class="container">
-        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">Возможности портала</h2>
+        <h2 class="section-title animate-fade-in-up" data-aos="fade-up">
+          Возможности портала
+        </h2>
         <div class="features-grid">
-          <div class="feature-card hover-lift animate-flip-in animate-stagger-1" data-aos="fade-up" data-aos-delay="100">
+          <div
+            class="feature-card hover-lift animate-flip-in animate-stagger-1"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
             <div class="feature-icon animate-rotate-in">
               <i class="fas fa-video"></i>
             </div>
             <h3 class="animate-fade-in-up">Мультимедийные записи</h3>
-            <p class="animate-fade-in-up animate-stagger-2">Поддержка текста, изображений и видео в одной записи</p>
+            <p class="animate-fade-in-up animate-stagger-2">
+              Поддержка текста, изображений и видео в одной записи
+            </p>
           </div>
-          <div class="feature-card hover-lift animate-flip-in animate-stagger-2" data-aos="fade-up" data-aos-delay="200">
+          <div
+            class="feature-card hover-lift animate-flip-in animate-stagger-2"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
             <div class="feature-icon animate-rotate-in animate-stagger-2">
               <i class="fas fa-tags"></i>
             </div>
-            <h3 class="animate-fade-in-up animate-stagger-2">Система категорий</h3>
-            <p class="animate-fade-in-up animate-stagger-3">Удобная организация контента по категориям и тегам</p>
+            <h3 class="animate-fade-in-up animate-stagger-2">
+              Система категорий
+            </h3>
+            <p class="animate-fade-in-up animate-stagger-3">
+              Удобная организация контента по категориям и тегам
+            </p>
           </div>
-          <div class="feature-card hover-lift animate-flip-in animate-stagger-3" data-aos="fade-up" data-aos-delay="300">
+          <div
+            class="feature-card hover-lift animate-flip-in animate-stagger-3"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
             <div class="feature-icon animate-rotate-in animate-stagger-3">
               <i class="fas fa-users"></i>
             </div>
-            <h3 class="animate-fade-in-up animate-stagger-3">Управление пользователями</h3>
-            <p class="animate-fade-in-up animate-stagger-4">Система ролей для администраторов и модераторов</p>
+            <h3 class="animate-fade-in-up animate-stagger-3">
+              Управление пользователями
+            </h3>
+            <p class="animate-fade-in-up animate-stagger-4">
+              Система ролей для администраторов и модераторов
+            </p>
           </div>
-          <div class="feature-card hover-lift animate-flip-in animate-stagger-4" data-aos="fade-up" data-aos-delay="400">
+          <div
+            class="feature-card hover-lift animate-flip-in animate-stagger-4"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
             <div class="feature-icon animate-rotate-in animate-stagger-4">
               <i class="fas fa-mobile-alt"></i>
             </div>
-            <h3 class="animate-fade-in-up animate-stagger-4">Адаптивный дизайн</h3>
-            <p class="animate-fade-in-up animate-stagger-5">Отлично работает на всех устройствах</p>
+            <h3 class="animate-fade-in-up animate-stagger-4">
+              Адаптивный дизайн
+            </h3>
+            <p class="animate-fade-in-up animate-stagger-5">
+              Отлично работает на всех устройствах
+            </p>
           </div>
         </div>
       </div>
@@ -203,7 +288,7 @@ export default {
       }
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-in-view')
           }
@@ -211,14 +296,18 @@ export default {
       }, observerOptions)
 
       // Observe all animatable elements
-      document.querySelectorAll('.recording-card, .feature-card, .stat-item').forEach(el => {
-        observer.observe(el)
-      })
+      document
+        .querySelectorAll('.recording-card, .feature-card, .stat-item')
+        .forEach((el) => {
+          observer.observe(el)
+        })
     },
     async fetchLatestRecordings() {
       this.loading = true
       try {
-        this.latestRecordings = await this.$store.dispatch('fetchLatestRecordings')
+        this.latestRecordings = await this.$store.dispatch(
+          'fetchLatestRecordings'
+        )
       } catch (error) {
         console.error('Error fetching latest recordings:', error)
       } finally {
@@ -239,7 +328,10 @@ export default {
       if (imageContainer) {
         imageContainer.style.display = 'none'
         const placeholder = imageContainer.nextElementSibling
-        if (placeholder && placeholder.classList.contains('recording-placeholder')) {
+        if (
+          placeholder &&
+          placeholder.classList.contains('recording-placeholder')
+        ) {
           placeholder.style.display = 'flex'
         }
       }
@@ -294,7 +386,6 @@ export default {
   background-clip: text;
   animation: gradientShift 3s ease infinite;
 }
-
 .hero-subtitle {
   font-size: 1.25rem;
   margin-bottom: 2rem;
@@ -337,7 +428,11 @@ export default {
   height: 100px;
   top: 20%;
   left: 10%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.3),
+    rgba(255, 215, 0, 0.1)
+  );
 }
 
 .shape-2 {
@@ -345,7 +440,11 @@ export default {
   height: 150px;
   top: 60%;
   right: 10%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.05)
+  );
 }
 
 .shape-3 {
@@ -353,7 +452,11 @@ export default {
   height: 80px;
   bottom: 20%;
   left: 20%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.1));
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.4),
+    rgba(255, 215, 0, 0.1)
+  );
 }
 
 .shape-4 {
@@ -370,7 +473,11 @@ export default {
   height: 60px;
   bottom: 40%;
   right: 20%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.5), rgba(255, 215, 0, 0.2));
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.5),
+    rgba(255, 215, 0, 0.2)
+  );
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
@@ -400,6 +507,10 @@ export default {
   line-height: 1.8;
   margin-bottom: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
+}
+
+.history-action {
+  margin-top: 2rem;
 }
 
 .history-stats {
@@ -627,7 +738,12 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.1),
+    transparent
+  );
   transition: left 0.5s ease;
 }
 
@@ -685,34 +801,34 @@ export default {
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.1rem;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .history-content {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .history-stats {
     flex-direction: row;
     justify-content: space-around;
   }
-  
+
   .section-title {
     font-size: 2rem;
   }
-  
+
   .recordings-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .recording-meta {
     flex-direction: column;
     align-items: flex-start;

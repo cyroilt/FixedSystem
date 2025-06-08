@@ -4,11 +4,17 @@
       <!-- Header Section -->
       <div class="recordings-header animate-fade-in-up" data-aos="fade-up">
         <h1 class="animate-glow">Записи факультета</h1>
-        <p class="animate-fade-in-up animate-stagger-2">Просмотрите все записи и материалы факультета</p>
+        <p class="animate-fade-in-up animate-stagger-2">
+          Просмотрите все записи и материалы факультета
+        </p>
       </div>
 
       <!-- Filters Section -->
-      <div class="filters-section animate-slide-in-up" data-aos="fade-up" data-aos-delay="100">
+      <div
+        class="filters-section animate-slide-in-up"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
         <div class="filters-card hover-glow">
           <div class="search-box animate-scale-in">
             <i class="fas fa-search animate-pulse"></i>
@@ -18,29 +24,48 @@
               placeholder="Поиск записей..."
               class="search-input animate-shimmer"
               @input="debouncedSearch"
-            >
+            />
           </div>
-          
+
           <div class="filter-controls">
-            <select v-model="filters.category" class="filter-select hover-lift animate-fade-in-left animate-stagger-1" @change="applyFilters">
+            <select
+              v-model="filters.category"
+              class="filter-select hover-lift animate-fade-in-left animate-stagger-1"
+              @change="applyFilters"
+            >
               <option value="">Все категории</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.name }}
               </option>
             </select>
-            
-            <select v-model="filters.sortBy" class="filter-select hover-lift animate-fade-in-left animate-stagger-2" @change="applyFilters">
+
+            <select
+              v-model="filters.sortBy"
+              class="filter-select hover-lift animate-fade-in-left animate-stagger-2"
+              @change="applyFilters"
+            >
               <option value="created_at">По дате создания</option>
               <option value="title">По названию</option>
               <option value="updated_at">По дате обновления</option>
             </select>
-            
-            <select v-model="filters.sortOrder" class="filter-select hover-lift animate-fade-in-left animate-stagger-3" @change="applyFilters">
+
+            <select
+              v-model="filters.sortOrder"
+              class="filter-select hover-lift animate-fade-in-left animate-stagger-3"
+              @change="applyFilters"
+            >
               <option value="desc">По убыванию</option>
               <option value="asc">По возрастанию</option>
             </select>
-            
-            <button @click="clearFilters" class="btn btn-secondary clear-filters hover-scale animate-bounce-in">
+
+            <button
+              @click="clearFilters"
+              class="btn btn-secondary clear-filters hover-scale animate-bounce-in"
+            >
               <i class="fas fa-times animate-rotate-in"></i>
               Очистить
             </button>
@@ -49,8 +74,16 @@
       </div>
 
       <!-- Add New Recording Button -->
-      <div v-if="isModerator" class="add-recording-section animate-zoom-in" data-aos="fade-up" data-aos-delay="200">
-        <router-link to="/recordings/new" class="btn btn-primary hover-glow animate-pulse">
+      <div
+        v-if="isModerator"
+        class="add-recording-section animate-zoom-in"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <router-link
+          to="/recordings/new"
+          class="btn btn-primary hover-glow animate-pulse"
+        >
           <i class="fas fa-plus animate-rotate-in"></i>
           Добавить запись
         </router-link>
@@ -67,7 +100,10 @@
         <i class="fas fa-exclamation-triangle animate-float"></i>
         <h3 class="animate-fade-in-up animate-stagger-2">Ошибка загрузки</h3>
         <p class="animate-fade-in-up animate-stagger-3">{{ error }}</p>
-        <button @click="fetchRecordings" class="btn btn-primary hover-lift animate-bounce-in">
+        <button
+          @click="fetchRecordings"
+          class="btn btn-primary hover-lift animate-bounce-in"
+        >
           Попробовать снова
         </button>
       </div>
@@ -84,13 +120,13 @@
           @click="viewRecording(recording.id)"
         >
           <div class="recording-image" v-if="recording.image_path">
-            <img 
-              :src="getImageUrl(recording.image_path)" 
+            <img
+              :src="getImageUrl(recording.image_path)"
               :alt="recording.title"
               @error="handleImageError"
               loading="lazy"
               class="animate-scale-in"
-            >
+            />
             <div class="recording-overlay animate-fade-in-up">
               <i class="fas fa-play animate-pulse"></i>
             </div>
@@ -99,10 +135,13 @@
             <i class="fas fa-image animate-float"></i>
             <span>Нет изображения</span>
           </div>
-          
+
           <div class="recording-content">
             <div class="recording-meta animate-fade-in-up">
-              <span v-if="recording.category" class="recording-category animate-slide-in-up">
+              <span
+                v-if="recording.category"
+                class="recording-category animate-slide-in-up"
+              >
                 <i class="fas fa-tag"></i>
                 {{ recording.category.name }}
               </span>
@@ -111,11 +150,18 @@
                 {{ formatDate(recording.created_at) }}
               </span>
             </div>
-            
-            <h3 class="recording-title animate-fade-in-left">{{ recording.title }}</h3>
-            <p class="recording-excerpt animate-fade-in-right">{{ truncateText(recording.content, 120) }}</p>
-            
-            <div class="recording-tags animate-slide-in-up" v-if="recording.tags && recording.tags.length > 0">
+
+            <h3 class="recording-title animate-fade-in-left">
+              {{ recording.title }}
+            </h3>
+            <p class="recording-excerpt animate-fade-in-right">
+              {{ truncateText(recording.content, 120) }}
+            </p>
+
+            <div
+              class="recording-tags animate-slide-in-up"
+              v-if="recording.tags && recording.tags.length > 0"
+            >
               <span
                 v-for="(tag, tagIndex) in recording.tags.slice(0, 3)"
                 :key="tag.id"
@@ -124,23 +170,32 @@
               >
                 {{ tag.name }}
               </span>
-              <span v-if="recording.tags.length > 3" class="tag-more animate-bounce-in">
+              <span
+                v-if="recording.tags.length > 3"
+                class="tag-more animate-bounce-in"
+              >
                 +{{ recording.tags.length - 3 }}
               </span>
             </div>
 
             <div class="recording-footer animate-fade-in-up">
               <div class="recording-stats">
-                <span v-if="recording.views" class="recording-views animate-fade-in-left">
+                <span
+                  v-if="recording.views"
+                  class="recording-views animate-fade-in-left"
+                >
                   <i class="fas fa-eye"></i>
                   {{ recording.views }}
                 </span>
-                <span v-if="recording.video_path" class="has-video animate-fade-in-right">
+                <span
+                  v-if="recording.video_path"
+                  class="has-video animate-fade-in-right"
+                >
                   <i class="fas fa-video animate-pulse"></i>
                   Видео
                 </span>
               </div>
-              
+
               <div class="recording-actions" v-if="canEditRecording(recording)">
                 <button
                   @click.stop="editRecording(recording.id)"
@@ -166,14 +221,23 @@
       <div v-else class="no-results animate-bounce-in">
         <i class="fas fa-search animate-float"></i>
         <h3 class="animate-fade-in-up animate-stagger-2">Записи не найдены</h3>
-        <p class="animate-fade-in-up animate-stagger-3">Попробуйте изменить параметры поиска или фильтры</p>
-        <button @click="clearFilters" class="btn btn-primary hover-glow animate-pulse">
+        <p class="animate-fade-in-up animate-stagger-3">
+          Попробуйте изменить параметры поиска или фильтры
+        </p>
+        <button
+          @click="clearFilters"
+          class="btn btn-primary hover-glow animate-pulse"
+        >
           Сбросить фильтры
         </button>
       </div>
 
-            <!-- Pagination -->
-      <div v-if="totalPages > 1" class="pagination animate-slide-in-up" data-aos="fade-up">
+      <!-- Pagination -->
+      <div
+        v-if="totalPages > 1"
+        class="pagination animate-slide-in-up"
+        data-aos="fade-up"
+      >
         <button
           @click="changePage(currentPage - 1)"
           :disabled="currentPage === 1"
@@ -181,17 +245,20 @@
         >
           <i class="fas fa-chevron-left"></i>
         </button>
-        
+
         <span
           v-for="page in visiblePages"
           :key="page"
           @click="changePage(page)"
           class="pagination-number hover-glow animate-zoom-in"
-          :class="{ active: page === currentPage, [`animate-stagger-${page}`]: page <= 5 }"
+          :class="{
+            active: page === currentPage,
+            [`animate-stagger-${page}`]: page <= 5
+          }"
         >
           {{ page }}
         </span>
-        
+
         <button
           @click="changePage(currentPage + 1)"
           :disabled="currentPage === totalPages"
@@ -203,23 +270,42 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay animate-fade-in-up" @click="showDeleteModal = false">
+    <div
+      v-if="showDeleteModal"
+      class="modal-overlay animate-fade-in-up"
+      @click="showDeleteModal = false"
+    >
       <div class="modal animate-zoom-in" @click.stop>
         <div class="modal-header animate-slide-in-up">
           <h3 class="animate-glow">Подтверждение удаления</h3>
-          <button @click="showDeleteModal = false" class="modal-close hover-scale animate-rotate-in">
+          <button
+            @click="showDeleteModal = false"
+            class="modal-close hover-scale animate-rotate-in"
+          >
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="modal-body animate-fade-in-up animate-stagger-2">
-          <p class="animate-fade-in-left">Вы уверены, что хотите удалить запись "{{ recordingToDelete?.title }}"?</p>
-          <p class="warning animate-fade-in-right animate-stagger-3">Это действие нельзя отменить.</p>
+          <p class="animate-fade-in-left">
+            Вы уверены, что хотите удалить запись "{{
+              recordingToDelete?.title
+            }}"?
+          </p>
+          <p class="warning animate-fade-in-right animate-stagger-3">
+            Это действие нельзя отменить.
+          </p>
         </div>
         <div class="modal-footer animate-slide-in-up animate-stagger-4">
-          <button @click="showDeleteModal = false" class="btn btn-secondary hover-scale">
+          <button
+            @click="showDeleteModal = false"
+            class="btn btn-secondary hover-scale"
+          >
             Отмена
           </button>
-          <button @click="confirmDelete" class="btn btn-danger hover-glow animate-pulse">
+          <button
+            @click="confirmDelete"
+            class="btn btn-danger hover-glow animate-pulse"
+          >
             <i class="fas fa-trash animate-rotate-in"></i>
             Удалить
           </button>
@@ -256,11 +342,11 @@ export default {
       const pages = []
       const start = Math.max(1, this.currentPage - 2)
       const end = Math.min(this.totalPages, this.currentPage + 2)
-      
+
       for (let i = start; i <= end; i++) {
         pages.push(i)
       }
-      
+
       return pages
     },
     debouncedSearch() {
@@ -283,11 +369,13 @@ export default {
       }
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-in-view')
             // Add staggered delay for grid items
-            const index = Array.from(entry.target.parentNode.children).indexOf(entry.target)
+            const index = Array.from(entry.target.parentNode.children).indexOf(
+              entry.target
+            )
             entry.target.style.animationDelay = `${index * 0.1}s`
           }
         })
@@ -295,7 +383,7 @@ export default {
 
       // Observe recording cards
       setTimeout(() => {
-        document.querySelectorAll('.recording-card').forEach(el => {
+        document.querySelectorAll('.recording-card').forEach((el) => {
           observer.observe(el)
         })
       }, 100)
@@ -309,10 +397,12 @@ export default {
           sort_by: this.filters.sortBy,
           sort_order: this.filters.sortOrder
         }
-        
+
         const response = await this.$store.dispatch('fetchRecordings', params)
-        this.totalPages = response.totalPages || Math.ceil((response.total || this.recordings.length) / 10)
-        
+        this.totalPages =
+          response.totalPages ||
+          Math.ceil((response.total || this.recordings.length) / 10)
+
         // Re-initialize animations after data load
         this.$nextTick(() => {
           this.initializeAnimations()
@@ -362,7 +452,10 @@ export default {
       if (imageContainer) {
         imageContainer.style.display = 'none'
         const placeholder = imageContainer.nextElementSibling
-        if (placeholder && placeholder.classList.contains('recording-placeholder')) {
+        if (
+          placeholder &&
+          placeholder.classList.contains('recording-placeholder')
+        ) {
           placeholder.style.display = 'flex'
         }
       }
@@ -991,46 +1084,45 @@ export default {
   .recordings-header h1 {
     font-size: 2rem;
   }
-  
+
   .filter-controls {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-select {
     min-width: auto;
   }
-  
+
   .clear-filters {
     margin-left: 0;
   }
-  
+
   .recordings-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .recording-meta {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .recording-footer {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .pagination {
     flex-wrap: wrap;
   }
-  
+
   .modal {
     margin: 1rem;
   }
-  
+
   .modal-footer {
     flex-direction: column;
   }
 }
 </style>
-

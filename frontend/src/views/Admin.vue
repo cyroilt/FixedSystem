@@ -33,10 +33,12 @@
               <div class="stat-info">
                 <h3>{{ stats.totalUsers }}</h3>
                 <p>Всего пользователей</p>
-                <span class="stat-change positive">+{{ stats.newUsersToday }} сегодня</span>
+                <span class="stat-change positive"
+                  >+{{ stats.newUsersToday }} сегодня</span
+                >
               </div>
             </div>
-            
+
             <div class="stat-card">
               <div class="stat-icon">
                 <i class="fas fa-file-alt"></i>
@@ -44,10 +46,12 @@
               <div class="stat-info">
                 <h3>{{ stats.totalRecordings }}</h3>
                 <p>Всего записей</p>
-                                <span class="stat-change positive">+{{ stats.newRecordingsToday }} сегодня</span>
+                <span class="stat-change positive"
+                  >+{{ stats.newRecordingsToday }} сегодня</span
+                >
               </div>
             </div>
-            
+
             <div class="stat-card">
               <div class="stat-icon">
                 <i class="fas fa-eye"></i>
@@ -55,10 +59,12 @@
               <div class="stat-info">
                 <h3>{{ formatNumber(stats.totalViews) }}</h3>
                 <p>Всего просмотров</p>
-                <span class="stat-change positive">+{{ formatNumber(stats.viewsToday) }} сегодня</span>
+                <span class="stat-change positive"
+                  >+{{ formatNumber(stats.viewsToday) }} сегодня</span
+                >
               </div>
             </div>
-            
+
             <div class="stat-card">
               <div class="stat-icon">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -66,7 +72,11 @@
               <div class="stat-info">
                 <h3>{{ stats.pendingReports }}</h3>
                 <p>Жалобы на рассмотрении</p>
-                <span class="stat-change negative" v-if="stats.pendingReports > 0">Требует внимания</span>
+                <span
+                  class="stat-change negative"
+                  v-if="stats.pendingReports > 0"
+                  >Требует внимания</span
+                >
               </div>
             </div>
           </div>
@@ -85,10 +95,15 @@
                 </div>
                 <div class="activity-content">
                   <p class="activity-text">{{ activity.description }}</p>
-                  <span class="activity-time">{{ formatDate(activity.created_at, 'relative') }}</span>
+                  <span class="activity-time">{{
+                    formatDate(activity.created_at, 'relative')
+                  }}</span>
                 </div>
                 <div class="activity-actions" v-if="activity.actionable">
-                  <button @click="handleActivityAction(activity)" class="btn btn-sm btn-primary">
+                  <button
+                    @click="handleActivityAction(activity)"
+                    class="btn btn-sm btn-primary"
+                  >
                     Просмотреть
                   </button>
                 </div>
@@ -109,7 +124,7 @@
                   type="text"
                   placeholder="Поиск пользователей..."
                   class="search-input"
-                >
+                />
               </div>
               <select v-model="userFilter" class="filter-select">
                 <option value="all">Все пользователи</option>
@@ -176,11 +191,24 @@
                       </button>
                       <button
                         @click="toggleUserStatus(user)"
-                        :class="['action-btn', user.status === 'active' ? 'ban-btn' : 'unban-btn']"
-                        :title="user.status === 'active' ? 'Заблокировать' : 'Разблокировать'"
+                        :class="[
+                          'action-btn',
+                          user.status === 'active' ? 'ban-btn' : 'unban-btn'
+                        ]"
+                        :title="
+                          user.status === 'active'
+                            ? 'Заблокировать'
+                            : 'Разблокировать'
+                        "
                         :disabled="user.id === currentUser.id"
                       >
-                        <i :class="user.status === 'active' ? 'fas fa-ban' : 'fas fa-check'"></i>
+                        <i
+                          :class="
+                            user.status === 'active'
+                              ? 'fas fa-ban'
+                              : 'fas fa-check'
+                          "
+                        ></i>
                       </button>
                       <button
                         @click="deleteUser(user)"
@@ -207,11 +235,14 @@
               <i class="fas fa-chevron-left"></i>
             </button>
             <span class="pagination-info">
-              Страница {{ userPagination.currentPage }} из {{ userPagination.totalPages }}
+              Страница {{ userPagination.currentPage }} из
+              {{ userPagination.totalPages }}
             </span>
             <button
               @click="loadUsers(userPagination.currentPage + 1)"
-              :disabled="userPagination.currentPage === userPagination.totalPages"
+              :disabled="
+                userPagination.currentPage === userPagination.totalPages
+              "
               class="pagination-btn"
             >
               <i class="fas fa-chevron-right"></i>
@@ -231,7 +262,7 @@
                   type="text"
                   placeholder="Поиск записей..."
                   class="search-input"
-                >
+                />
               </div>
               <select v-model="recordingFilter" class="filter-select">
                 <option value="all">Все записи</option>
@@ -250,40 +281,74 @@
               class="recording-card"
             >
               <div class="recording-image" v-if="recording.image_path">
-                <img :src="recording.image_path" :alt="recording.title">
+                <img :src="recording.image_path" :alt="recording.title" />
               </div>
               <div class="recording-content">
                 <div class="recording-meta">
                   <span :class="['recording-status', recording.status]">
                     {{ getStatusLabel(recording.status) }}
                   </span>
-                  <span class="recording-date">{{ formatDate(recording.created_at) }}</span>
+                  <span class="recording-date">{{
+                    formatDate(recording.created_at)
+                  }}</span>
                 </div>
                 <h4 class="recording-title">{{ recording.title }}</h4>
-                <p class="recording-author">Автор: {{ recording.author?.username }}</p>
-                <p class="recording-excerpt">{{ truncateText(recording.content, 100) }}</p>
+                <p class="recording-author">
+                  Автор: {{ recording.author?.username }}
+                </p>
+                <p class="recording-excerpt">
+                  {{ truncateText(recording.content, 100) }}
+                </p>
                 <div class="recording-stats">
-                  <span><i class="fas fa-eye"></i> {{ recording.views || 0 }}</span>
-                  <span><i class="fas fa-heart"></i> {{ recording.likes || 0 }}</span>
-                  <span v-if="recording.reports_count > 0" class="reports-count">
+                  <span
+                    ><i class="fas fa-eye"></i> {{ recording.views || 0 }}</span
+                  >
+                  <span
+                    ><i class="fas fa-heart"></i>
+                    {{ recording.likes || 0 }}</span
+                  >
+                  <span
+                    v-if="recording.reports_count > 0"
+                    class="reports-count"
+                  >
                     <i class="fas fa-flag"></i> {{ recording.reports_count }}
                   </span>
                 </div>
               </div>
               <div class="recording-actions">
-                <button @click="viewRecording(recording.id)" class="action-btn view-btn">
+                <button
+                  @click="viewRecording(recording.id)"
+                  class="action-btn view-btn"
+                >
                   <i class="fas fa-eye"></i>
                 </button>
-                <button @click="editRecording(recording.id)" class="action-btn edit-btn">
+                <button
+                  @click="editRecording(recording.id)"
+                  class="action-btn edit-btn"
+                >
                   <i class="fas fa-edit"></i>
                 </button>
                 <button
                   @click="toggleRecordingStatus(recording)"
-                  :class="['action-btn', recording.status === 'published' ? 'hide-btn' : 'publish-btn']"
+                  :class="[
+                    'action-btn',
+                    recording.status === 'published'
+                      ? 'hide-btn'
+                      : 'publish-btn'
+                  ]"
                 >
-                  <i :class="recording.status === 'published' ? 'fas fa-eye-slash' : 'fas fa-check'"></i>
+                  <i
+                    :class="
+                      recording.status === 'published'
+                        ? 'fas fa-eye-slash'
+                        : 'fas fa-check'
+                    "
+                  ></i>
                 </button>
-                <button @click="deleteRecording(recording)" class="action-btn delete-btn">
+                <button
+                  @click="deleteRecording(recording)"
+                  class="action-btn delete-btn"
+                >
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -314,7 +379,7 @@
                 <div class="report-info">
                   <h4>{{ getReportTypeLabel(report.type) }}</h4>
                   <p class="report-meta">
-                    От: {{ report.reporter?.username }} • 
+                    От: {{ report.reporter?.username }} •
                     {{ formatDate(report.created_at, 'relative') }}
                   </p>
                 </div>
@@ -322,7 +387,7 @@
                   {{ getStatusLabel(report.status) }}
                 </span>
               </div>
-              
+
               <div class="report-content">
                 <p class="report-reason">{{ report.reason }}</p>
                 <div class="report-target" v-if="report.recording">
@@ -330,12 +395,18 @@
                   <p>Автор: {{ report.recording.author?.username }}</p>
                 </div>
               </div>
-              
+
               <div class="report-actions" v-if="report.status === 'pending'">
-                <button @click="resolveReport(report, 'dismissed')" class="btn btn-secondary">
+                <button
+                  @click="resolveReport(report, 'dismissed')"
+                  class="btn btn-secondary"
+                >
                   Отклонить
                 </button>
-                <button @click="resolveReport(report, 'action_taken')" class="btn btn-primary">
+                <button
+                  @click="resolveReport(report, 'action_taken')"
+                  class="btn btn-primary"
+                >
                   Принять меры
                 </button>
               </div>
@@ -355,7 +426,7 @@
                     v-model="siteSettings.siteName"
                     type="text"
                     class="setting-input"
-                  >
+                  />
                 </label>
               </div>
               <div class="setting-group">
@@ -373,7 +444,7 @@
                   <input
                     v-model="siteSettings.registrationEnabled"
                     type="checkbox"
-                  >
+                  />
                   <span class="checkmark"></span>
                   Разрешить регистрацию новых пользователей
                 </label>
@@ -387,7 +458,7 @@
                   <input
                     v-model="moderationSettings.autoModeration"
                     type="checkbox"
-                  >
+                  />
                   <span class="checkmark"></span>
                   Автоматическая модерация
                 </label>
@@ -397,7 +468,7 @@
                   <input
                     v-model="moderationSettings.requireApproval"
                     type="checkbox"
-                  >
+                  />
                   <span class="checkmark"></span>
                   Требовать одобрение новых записей
                 </label>
@@ -430,7 +501,7 @@ export default {
         newUsersToday: 0,
         totalRecordings: 0,
         newRecordingsToday: 0,
-                totalViews: 0,
+        totalViews: 0,
         viewsToday: 0,
         pendingReports: 0
       },
@@ -458,7 +529,11 @@ export default {
         requireApproval: false
       },
       adminTabs: [
-        { key: 'dashboard', label: 'Панель управления', icon: 'fas fa-tachometer-alt' },
+        {
+          key: 'dashboard',
+          label: 'Панель управления',
+          icon: 'fas fa-tachometer-alt'
+        },
         { key: 'users', label: 'Пользователи', icon: 'fas fa-users' },
         { key: 'recordings', label: 'Записи', icon: 'fas fa-file-alt' },
         { key: 'reports', label: 'Жалобы', icon: 'fas fa-flag', badge: 0 },
@@ -477,17 +552,18 @@ export default {
 
       if (this.userSearch) {
         const search = this.userSearch.toLowerCase()
-        filtered = filtered.filter(user =>
-          user.username.toLowerCase().includes(search) ||
-          user.email.toLowerCase().includes(search)
+        filtered = filtered.filter(
+          (user) =>
+            user.username.toLowerCase().includes(search) ||
+            user.email.toLowerCase().includes(search)
         )
       }
 
       if (this.userFilter !== 'all') {
         if (this.userFilter === 'banned') {
-          filtered = filtered.filter(user => user.status === 'banned')
+          filtered = filtered.filter((user) => user.status === 'banned')
         } else {
-          filtered = filtered.filter(user => user.role === this.userFilter)
+          filtered = filtered.filter((user) => user.role === this.userFilter)
         }
       }
 
@@ -498,18 +574,21 @@ export default {
 
       if (this.recordingSearch) {
         const search = this.recordingSearch.toLowerCase()
-        filtered = filtered.filter(recording =>
-          recording.title.toLowerCase().includes(search) ||
-          recording.content.toLowerCase().includes(search) ||
-          recording.author?.username.toLowerCase().includes(search)
+        filtered = filtered.filter(
+          (recording) =>
+            recording.title.toLowerCase().includes(search) ||
+            recording.content.toLowerCase().includes(search) ||
+            recording.author?.username.toLowerCase().includes(search)
         )
       }
 
       if (this.recordingFilter !== 'all') {
         if (this.recordingFilter === 'reported') {
-          filtered = filtered.filter(recording => recording.reports_count > 0)
+          filtered = filtered.filter((recording) => recording.reports_count > 0)
         } else {
-          filtered = filtered.filter(recording => recording.status === this.recordingFilter)
+          filtered = filtered.filter(
+            (recording) => recording.status === this.recordingFilter
+          )
         }
       }
 
@@ -517,7 +596,9 @@ export default {
     },
     filteredReports() {
       if (this.reportFilter === 'all') return this.reports
-      return this.reports.filter(report => report.status === this.reportFilter)
+      return this.reports.filter(
+        (report) => report.status === this.reportFilter
+      )
     }
   },
   async created() {
@@ -551,7 +632,9 @@ export default {
     async loadDashboardData() {
       try {
         this.stats = await this.$store.dispatch('admin/fetchStats')
-        this.recentActivity = await this.$store.dispatch('admin/fetchRecentActivity')
+        this.recentActivity = await this.$store.dispatch(
+          'admin/fetchRecentActivity'
+        )
       } catch (error) {
         console.error('Error loading dashboard data:', error)
       }
@@ -617,8 +700,12 @@ export default {
     async toggleUserStatus(user) {
       const newStatus = user.status === 'active' ? 'banned' : 'active'
       const action = newStatus === 'banned' ? 'заблокировать' : 'разблокировать'
-      
-      if (!confirm(`Вы уверены, что хотите ${action} пользователя ${user.username}?`)) {
+
+      if (
+        !confirm(
+          `Вы уверены, что хотите ${action} пользователя ${user.username}?`
+        )
+      ) {
         return
       }
 
@@ -628,20 +715,28 @@ export default {
           status: newStatus
         })
         user.status = newStatus
-        this.$toast.success(`Пользователь ${user.username} ${newStatus === 'banned' ? 'заблокирован' : 'разблокирован'}`)
+        this.$toast.success(
+          `Пользователь ${user.username} ${
+            newStatus === 'banned' ? 'заблокирован' : 'разблокирован'
+          }`
+        )
       } catch (error) {
         console.error('Error updating user status:', error)
         this.$toast.error('Ошибка при изменении статуса пользователя')
       }
     },
     async deleteUser(user) {
-      if (!confirm(`Вы уверены, что хотите удалить пользователя ${user.username}? Это действие необратимо.`)) {
+      if (
+        !confirm(
+          `Вы уверены, что хотите удалить пользователя ${user.username}? Это действие необратимо.`
+        )
+      ) {
         return
       }
 
       try {
         await this.$store.dispatch('admin/deleteUser', user.id)
-        this.users = this.users.filter(u => u.id !== user.id)
+        this.users = this.users.filter((u) => u.id !== user.id)
         this.$toast.success('Пользователь удален')
       } catch (error) {
         console.error('Error deleting user:', error)
@@ -660,8 +755,12 @@ export default {
     async toggleRecordingStatus(recording) {
       const newStatus = recording.status === 'published' ? 'draft' : 'published'
       const action = newStatus === 'published' ? 'опубликовать' : 'скрыть'
-      
-      if (!confirm(`Вы уверены, что хотите ${action} запись "${recording.title}"?`)) {
+
+      if (
+        !confirm(
+          `Вы уверены, что хотите ${action} запись "${recording.title}"?`
+        )
+      ) {
         return
       }
 
@@ -671,20 +770,26 @@ export default {
           status: newStatus
         })
         recording.status = newStatus
-        this.$toast.success(`Запись ${newStatus === 'published' ? 'опубликована' : 'скрыта'}`)
+        this.$toast.success(
+          `Запись ${newStatus === 'published' ? 'опубликована' : 'скрыта'}`
+        )
       } catch (error) {
         console.error('Error updating recording status:', error)
         this.$toast.error('Ошибка при изменении статуса записи')
       }
     },
     async deleteRecording(recording) {
-      if (!confirm(`Вы уверены, что хотите удалить запись "${recording.title}"? Это действие необратимо.`)) {
+      if (
+        !confirm(
+          `Вы уверены, что хотите удалить запись "${recording.title}"? Это действие необратимо.`
+        )
+      ) {
         return
       }
 
       try {
         await this.$store.dispatch('admin/deleteRecording', recording.id)
-        this.recordings = this.recordings.filter(r => r.id !== recording.id)
+        this.recordings = this.recordings.filter((r) => r.id !== recording.id)
         this.$toast.success('Запись удалена')
       } catch (error) {
         console.error('Error deleting recording:', error)
@@ -734,8 +839,10 @@ export default {
       }
     },
     updateReportsBadge() {
-      const pendingReports = this.reports.filter(r => r.status === 'pending').length
-      const reportsTab = this.adminTabs.find(tab => tab.key === 'reports')
+      const pendingReports = this.reports.filter(
+        (r) => r.status === 'pending'
+      ).length
+      const reportsTab = this.adminTabs.find((tab) => tab.key === 'reports')
       if (reportsTab) {
         reportsTab.badge = pendingReports > 0 ? pendingReports : null
       }
@@ -784,21 +891,21 @@ export default {
     },
     formatDate(dateString, format = 'default') {
       const date = new Date(dateString)
-      
+
       if (format === 'relative') {
         const now = new Date()
         const diff = now - date
         const minutes = Math.floor(diff / (1000 * 60))
         const hours = Math.floor(diff / (1000 * 60 * 60))
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        
+
         if (minutes < 1) return 'Только что'
         if (minutes < 60) return `${minutes} мин назад`
         if (hours < 24) return `${hours} ч назад`
         if (days < 7) return `${days} дн назад`
         return date.toLocaleDateString('ru-RU')
       }
-      
+
       return date.toLocaleDateString('ru-RU', {
         year: 'numeric',
         month: 'short',
@@ -858,7 +965,7 @@ export default {
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   border-radius: 12px;
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
   white-space: nowrap;
   position: relative;
 }
@@ -1551,7 +1658,7 @@ export default {
   font-size: 1rem;
 }
 
-.setting-checkbox input[type="checkbox"] {
+.setting-checkbox input[type='checkbox'] {
   display: none;
 }
 
@@ -1566,12 +1673,12 @@ export default {
   flex-shrink: 0;
 }
 
-.setting-checkbox input[type="checkbox"]:checked + .checkmark {
+.setting-checkbox input[type='checkbox']:checked + .checkmark {
   background: #ffd700;
   border-color: #ffd700;
 }
 
-.setting-checkbox input[type="checkbox"]:checked + .checkmark::after {
+.setting-checkbox input[type='checkbox']:checked + .checkmark::after {
   content: '';
   position: absolute;
   left: 6px;
@@ -1636,7 +1743,7 @@ export default {
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
-  
+
   .recordings-grid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
@@ -1646,61 +1753,61 @@ export default {
   .admin {
     padding: 1rem 0;
   }
-  
+
   .admin-nav {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .nav-btn {
     justify-content: center;
   }
-  
+
   .tab-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .tab-actions {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .search-input {
     width: 100%;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .recordings-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .users-table {
     overflow-x: auto;
   }
-  
+
   .users-table table {
     min-width: 800px;
   }
-  
+
   .report-header {
     flex-direction: column;
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .report-actions {
     justify-content: stretch;
     flex-direction: column;
   }
-  
+
   .action-buttons {
     justify-content: center;
   }
-  
+
   .admin-content {
     padding: 1rem;
   }
@@ -1710,17 +1817,17 @@ export default {
   .admin-header h1 {
     font-size: 2rem;
   }
-  
+
   .stat-card {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .activity-item {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .user-info {
     flex-direction: column;
     text-align: center;
@@ -1743,8 +1850,12 @@ export default {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
@@ -1794,6 +1905,3 @@ export default {
   background: rgba(255, 215, 0, 0.7);
 }
 </style>
-
-
-
